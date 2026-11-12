@@ -1,0 +1,16 @@
+# Buscadores e assistentes de IA são bem-vindos.
+User-agent: *
+Allow: /
+
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Google-Extended
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://deadnoise.vercel.app/sitemap.xml

@@ -1,0 +1,27 @@
+# DeadNoise
+
+> DeadNoise é um app grátis e open source (licença MIT) para macOS que cancela o ruído do seu microfone em chamadas. Fica na barra de menus e roda inteiro no Mac, sem conta e sem nuvem.
+
+English: DeadNoise is a free, open-source (MIT) macOS menu bar app that removes background noise from your microphone on calls (Google Meet, Zoom, Microsoft Teams). It runs fully on-device, with no account and no cloud.
+
+## O que faz
+
+- Cancelar meu ruído: cria um microfone virtual, "DeadNoise Microphone", que entrega só a sua voz para o app de chamada. Usa o isolamento de voz do próprio macOS.
+- Volume por app: controle independente para cada app, de 0 a 150%.
+- Gravar e transcrever: grava a chamada e gera a transcrição separando "Eu" e "Outros", tudo no aparelho.
+
+## Fatos
+
+- Preço: grátis. Licença: MIT.
+- Sistema: macOS 15 ou mais novo; app universal (Apple Silicon e Intel). A transcrição exige o macOS 26.
+- Instaladores assinados com Developer ID e notarizados pela Apple.
+- Privacidade: o áudio é processado localmente; o app não tem conta nem servidor.
+- Limites: não remove o ruído dos outros participantes da chamada.
+- Idioma da interface: português (Brasil).
+
+## Links
+
+- [Site](https://deadnoise.vercel.app/): página do produto, com perguntas frequentes
+- [Download (.dmg)](https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.dmg): imagem de disco da versão mais recente
+- [Download (.pkg)](https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.pkg): instalador que também instala o microfone virtual
+- [Código-fonte](https://github.com/wellmota/deadnoise): repositório no GitHub, com README e instruções de compilação
