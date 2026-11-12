@@ -4,6 +4,8 @@
 
 Logo em `Resources/logo/` (SVG).
 
+Site: https://deadnoise.vercel.app (código em `site/`).
+
 App de barra de menu para macOS (15+) que controla o volume de saída de cada app separadamente
 (ex.: Teams e Google Meet em calls ao mesmo tempo).
 
