@@ -8,7 +8,7 @@ struct VolMixApp: App {
         MenuBarExtra {
             MenuView().environmentObject(model).environmentObject(model.meeting)
         } label: {
-            Image(systemName: "slider.vertical.3")
+            Image(nsImage: MenuBarIcon.image)
         }
         .menuBarExtraStyle(.window)
     }
