@@ -38,6 +38,10 @@ final class MeetingController: ObservableObject {
         }
     }
     @Published private(set) var cleanMicActive = false
+    /// O driver do microfone virtual não está instalado (a interface oferece instalar).
+    @Published private(set) var driverMissing = false
+    /// Definido pelo MixerModel: recarrega a lista de dispositivos de áudio.
+    var requestDeviceRefresh: (() -> Void)?
     @Published private(set) var cleanMicNote: String?
 
     /// Mantidos pelo MixerModel.
@@ -126,10 +130,18 @@ final class MeetingController: ObservableObject {
 
     /// Liga/desliga o processamento conforme o estado atual. Barato: pode ser chamado a cada atualização.
     private func syncCleanMic() {
-        guard cleanMic else { return setCleanMic(nil, note: nil) }
-        guard let virtualMic, let appIO = CA.device(forUID: MicDenoiser.appIOUID) else {
-            return setCleanMic(nil, note: "Falta instalar o driver do microfone virtual. No Terminal, na pasta do projeto: ./Driver/build.sh install")
+        guard cleanMic else {
+            if driverMissing { driverMissing = false }
+            return setCleanMic(nil, note: nil)
         }
+        guard let virtualMic, let appIO = CA.device(forUID: MicDenoiser.appIOUID) else {
+            if !driverMissing { driverMissing = true }
+            let canInstall = DriverInstaller.bundledDriver != nil
+            return setCleanMic(nil, note: canInstall
+                ? "Falta o microfone virtual. A instalação pede a senha do Mac e reinicia o áudio por alguns segundos."
+                : "Falta o microfone virtual. Instale pelo instalador do site ou com ./Driver/build.sh install.")
+        }
+        if driverMissing { driverMissing = false }
         guard inputDevice != kAudioObjectUnknown, inputDevice != virtualMic else {
             return setCleanMic(nil, note: "Em Entrada, escolha o seu microfone de verdade. O “\(virtualMicName)” é para os apps de chamada.")
         }
@@ -175,6 +187,27 @@ final class MeetingController: ObservableObject {
         } catch {
             failedRoute = route
             setCleanMic(nil, note: "Não foi possível iniciar o cancelamento de ruído: \(error.localizedDescription)")
+        }
+    }
+
+    /// Instala o driver que vem dentro do app. Mostra o pedido de senha do macOS.
+    func installDriver() {
+        do {
+            try DriverInstaller.install()
+            cleanMicNote = "Microfone virtual instalado. Aguardando o áudio reiniciar…"
+            Task { @MainActor in
+                // O serviço de áudio leva alguns segundos para voltar e publicar o dispositivo novo.
+                for _ in 0..<6 {
+                    try? await Task.sleep(for: .seconds(2))
+                    requestDeviceRefresh?()
+                    if virtualMic != nil { break }
+                }
+                syncCleanMic()
+            }
+        } catch DriverInstaller.Failure.cancelled {
+            // Nada a fazer: a pessoa desistiu no pedido de senha.
+        } catch {
+            cleanMicNote = error.localizedDescription
         }
     }
 

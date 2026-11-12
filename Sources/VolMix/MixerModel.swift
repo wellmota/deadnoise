@@ -47,6 +47,10 @@ final class MixerModel: ObservableObject {
         }
         muted = Set(defaults.stringArray(forKey: "muted") ?? [])
 
+        meeting.requestDeviceRefresh = { [weak self] in
+            self?.refreshDevices()
+            self?.refresh()
+        }
         updateOutputDevice()
         refreshDevices()
         refresh()

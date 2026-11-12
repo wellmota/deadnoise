@@ -11,9 +11,14 @@ App de barra de menu para macOS (15+) que controla o volume de saída de cada ap
 
 ## Instalar
 
-Baixe o [DeadNoise.pkg](https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.pkg) e abra.
-O instalador é assinado com Developer ID e notarizado pela Apple; ele coloca o app em Aplicativos e o
-driver do microfone virtual em `/Library/Audio/Plug-Ins/HAL`, e reinicia o áudio do Mac por alguns segundos.
+Os dois downloads são assinados com Developer ID e notarizados pela Apple:
+
+- [DeadNoise.dmg](https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.dmg): abra, arraste o app
+  para Aplicativos e, no menu do app, ligue "Cancelar meu ruído" > "Instalar microfone virtual" (pede a senha).
+- [DeadNoise.pkg](https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.pkg): instalador do macOS
+  que já coloca o app em Aplicativos e o driver em `/Library/Audio/Plug-Ins/HAL`.
+
+Nos dois casos o áudio do Mac reinicia por alguns segundos quando o driver entra.
 
 Requisitos: macOS 15 ou mais novo. A transcrição exige o macOS 26.
 
@@ -89,9 +94,11 @@ com o ganho aplicado (0–150%). Em 100% o tap é removido, e o áudio do app fi
 
 ## Publicar uma versão
 
-`./release.sh` gera `dist/DeadNoise.pkg`: universal (Apple Silicon e Intel), assinado com Developer ID e
-notarizado pela Apple. Os pré-requisitos (certificados e credencial de notarização) estão no topo do script.
-Depois: `gh release create vX.Y.Z dist/DeadNoise.pkg` e `vercel deploy --prod` em `site/`.
+`./release.sh` gera `dist/DeadNoise.dmg` e `dist/DeadNoise.pkg`: universais (Apple Silicon e Intel), assinados
+com Developer ID e notarizados pela Apple. Os pré-requisitos (certificados e credencial de notarização) estão
+no topo do script. Depois: `gh release create vX.Y.Z dist/DeadNoise.dmg dist/DeadNoise.pkg`.
+
+O site (`site/`) é publicado pela Vercel a cada push na `main`.
 
 `./package.sh` gera um zip com assinatura genérica, para testar sem a conta de desenvolvedor.
 

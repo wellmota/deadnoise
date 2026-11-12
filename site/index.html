@@ -82,6 +82,8 @@
   .steps { margin: 30px 0 26px; padding: 0; list-style: none; counter-reset: i; }
   .steps li { counter-increment: i; position: relative; padding: 10px 0 10px 40px; border-bottom: 1px solid var(--line); font-size: 16px; }
   .steps li::before { content: counter(i); position: absolute; left: 0; top: 9px; width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: var(--paper); font-weight: 700; font-size: 14px; display: grid; place-items: center; }
+  .note.alt { margin: -8px 0 22px; }
+  .note.alt a { font-weight: 700; color: var(--ink); }
   details { border: 2px solid var(--ink); }
   summary { cursor: pointer; list-style: none; padding: 14px 18px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; transition: background .2s, color .2s; }
   summary::-webkit-details-marker { display: none; }
@@ -167,7 +169,7 @@
     <div class="wrap" style="position:relative;z-index:1;margin-top:44px">
       <p class="lede">Mate o ruído do seu microfone antes que ele chegue na chamada. Tudo roda no seu Mac.</p>
       <div class="cta">
-        <a class="btn" href="https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.pkg">Baixar para macOS</a>
+        <a class="btn" href="https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.dmg">Baixar para macOS</a>
       </div>
       <p class="req">Grátis e open source. Instalador assinado e verificado pela Apple. macOS 15 ou mais novo.</p>
     </div>
@@ -207,12 +209,13 @@
         </ol>
       </div>
       <div id="instalar" class="install">
-        <a class="btn big" href="https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.pkg">Baixar para macOS</a>
+        <a class="btn big" href="https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.dmg">Baixar para macOS</a>
         <ol class="steps">
-          <li>Abra o <b>DeadNoise.pkg</b> que você baixou.</li>
-          <li>Siga o Instalador do macOS e digite a senha do Mac. O áudio reinicia por alguns segundos.</li>
-          <li>O DeadNoise abre sozinho: procure a caveira na barra de menus.</li>
+          <li>Abra o <b>DeadNoise.dmg</b> e arraste o app para <b>Aplicativos</b>.</li>
+          <li>Abra o DeadNoise: ele fica na barra de menus, com o ícone da caveira.</li>
+          <li>Ligue <b>Cancelar meu ruído</b> e clique em <b>Instalar microfone virtual</b>. O macOS pede a senha e o áudio reinicia por alguns segundos.</li>
         </ol>
+        <p class="note alt">Prefere um instalador que já faz tudo? <a href="https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.pkg">Baixe o .pkg</a>.</p>
         <details>
           <summary>Instalar pelo Terminal</summary>
           <pre><span class="c"># compila e instala a partir do código</span>

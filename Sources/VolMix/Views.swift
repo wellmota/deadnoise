@@ -307,6 +307,15 @@ struct CleanMicCard: View {
                     .toggleStyle(.switch)
                     .controlSize(.small)
             }
+            if meeting.driverMissing, DriverInstaller.bundledDriver != nil {
+                Button {
+                    meeting.installDriver()
+                } label: {
+                    Label("Instalar microfone virtual", systemImage: "arrow.down.circle")
+                        .frame(maxWidth: .infinity)
+                }
+                .controlSize(.large)
+            }
         }
     }
 }

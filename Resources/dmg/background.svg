@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 420" width="660" height="420">
+  <rect width="660" height="420" fill="#D7301F"/>
+  <polygon points="0,0 400,0 318,112 0,112" fill="#F4F0E1"/>
+  <text x="34" y="58" font-family="Futura, 'Avenir Next Condensed', 'Helvetica Neue', sans-serif" font-weight="700" font-size="34" letter-spacing="2" fill="#1E1A19">DEADNOISE</text>
+  <text x="36" y="86" font-family="'Helvetica Neue', Helvetica, sans-serif" font-weight="500" font-size="13" fill="#1E1A19">Arraste o app para a pasta Aplicativos</text>
+  <g fill="#1E1A19">
+    <rect x="270" y="213" width="96" height="18" rx="2"/>
+    <polygon points="360,193 402,222 360,251"/>
+  </g>
+  <circle cx="170" cy="222" r="86" fill="none" stroke="#F4F0E1" stroke-width="2" stroke-dasharray="6 7" opacity=".75"/>
+  <circle cx="490" cy="222" r="86" fill="none" stroke="#F4F0E1" stroke-width="2" stroke-dasharray="6 7" opacity=".75"/>
+  <text x="330.0" y="396" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, sans-serif" font-weight="500" font-size="12" fill="#F4F0E1">Depois abra o DeadNoise e ligue “Cancelar meu ruído”.</text>
+</svg>
