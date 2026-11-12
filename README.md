@@ -11,18 +11,22 @@ App de barra de menu para macOS (15+) que controla o volume de saída de cada ap
 
 ## Instalar
 
-Requisitos: macOS 15 ou mais novo em Apple Silicon. A transcrição exige o macOS 26.
+Baixe o [DeadNoise.pkg](https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.pkg) e abra.
+O instalador é assinado com Developer ID e notarizado pela Apple; ele coloca o app em Aplicativos e o
+driver do microfone virtual em `/Library/Audio/Plug-Ins/HAL`, e reinicia o áudio do Mac por alguns segundos.
 
-Do código (recomendado enquanto não houver versão notarizada):
+Requisitos: macOS 15 ou mais novo. A transcrição exige o macOS 26.
+
+Para remover: `./uninstall.sh` (ou apague `/Applications/DeadNoise.app` e
+`/Library/Audio/Plug-Ins/HAL/VolMixAudio.driver` e reinicie o Mac).
+
+Do código:
 
 ```bash
-git clone <url-do-repositório> && cd <pasta>
+git clone https://github.com/wellmota/deadnoise && cd deadnoise
 ./build.sh install           # app
 ./Driver/build.sh install    # microfone virtual (pede senha, reinicia o áudio)
 ```
-
-O zip dos Releases não é notarizado pela Apple: o macOS bloqueia na primeira abertura e é preciso
-liberar em Ajustes > Privacidade e Segurança.
 
 Gravar chamadas pode exigir o consentimento dos participantes, conforme a lei do seu país.
 
@@ -85,10 +89,13 @@ com o ganho aplicado (0–150%). Em 100% o tap é removido, e o áudio do app fi
 
 ## Publicar uma versão
 
-- `./package.sh` gera `dist/DeadNoise.zip` (app, driver e `Instalar.command`) com assinatura genérica.
-  É o que o site distribui hoje; o macOS pede para liberar em Ajustes > Privacidade e Segurança.
-- `./release.sh` gera `dist/DeadNoise.pkg`, universal (Apple Silicon e Intel), assinado com Developer ID
-  e notarizado pela Apple: instala com dois cliques, sem aviso. Os pré-requisitos estão no topo do script.
+`./release.sh` gera `dist/DeadNoise.pkg`: universal (Apple Silicon e Intel), assinado com Developer ID e
+notarizado pela Apple. Os pré-requisitos (certificados e credencial de notarização) estão no topo do script.
+Depois: `gh release create vX.Y.Z dist/DeadNoise.pkg` e `vercel deploy --prod` em `site/`.
+
+`./package.sh` gera um zip com assinatura genérica, para testar sem a conta de desenvolvedor.
+
+Pendências em `TODO.md`.
 
 ## Licença
 
