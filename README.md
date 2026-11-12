@@ -83,6 +83,13 @@ com o ganho aplicado (0–150%). Em 100% o tap é removido, e o áudio do app fi
 - Na primeira vez o macOS pede a permissão **Gravação de Tela e Áudio do Sistema**. Se um app ficar
   mudo ao mexer no slider, confira essa permissão em Ajustes > Privacidade e Segurança.
 
+## Publicar uma versão
+
+- `./package.sh` gera `dist/DeadNoise.zip` (app, driver e `Instalar.command`) com assinatura genérica.
+  É o que o site distribui hoje; o macOS pede para liberar em Ajustes > Privacidade e Segurança.
+- `./release.sh` gera `dist/DeadNoise.pkg`, universal (Apple Silicon e Intel), assinado com Developer ID
+  e notarizado pela Apple: instala com dois cliques, sem aviso. Os pré-requisitos estão no topo do script.
+
 ## Licença
 
 MIT. Veja `LICENSE`.

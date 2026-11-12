@@ -1,0 +1,9 @@
+#!/bin/bash
+# Recarrega o áudio para o microfone virtual aparecer e abre o app para quem está logado.
+killall coreaudiod 2>/dev/null || true
+sleep 3
+CONSOLE_USER=$(stat -f%Su /dev/console)
+if [[ -n "$CONSOLE_USER" && "$CONSOLE_USER" != "root" ]]; then
+  launchctl asuser "$(id -u "$CONSOLE_USER")" sudo -u "$CONSOLE_USER" open /Applications/DeadNoise.app || true
+fi
+exit 0

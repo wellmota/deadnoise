@@ -78,6 +78,18 @@
   pre { background: var(--ink); color: var(--paper); padding: 22px; overflow-x: auto; font: 500 14px/1.7 ui-monospace, "SF Mono", Menlo, monospace; box-shadow: 8px 8px 0 var(--red); }
   pre .c { color: #9d9486; }
   .note { margin-top: 20px; font-size: 14.5px; color: var(--muted); }
+  .btn.big { font-size: 22px; padding: 22px 30px; width: 100%; justify-content: center; }
+  .steps { margin: 30px 0 26px; padding: 0; list-style: none; counter-reset: i; }
+  .steps li { counter-increment: i; position: relative; padding: 10px 0 10px 40px; border-bottom: 1px solid var(--line); font-size: 16px; }
+  .steps li::before { content: counter(i); position: absolute; left: 0; top: 9px; width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: var(--paper); font-weight: 700; font-size: 14px; display: grid; place-items: center; }
+  details { border: 2px solid var(--ink); }
+  summary { cursor: pointer; list-style: none; padding: 14px 18px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; transition: background .2s, color .2s; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-family: "Anton", Impact, sans-serif; font-size: 26px; line-height: 1; color: var(--red); }
+  details[open] summary::after { content: "–"; }
+  summary:hover, details[open] summary { background: var(--ink); color: var(--paper); }
+  details pre { box-shadow: none; }
+  details .note { margin: 0; padding: 14px 18px; }
 
   footer { border-top: 2px solid var(--ink); padding: 34px 0 46px; display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: space-between; font-size: 14px; }
 
@@ -155,10 +167,9 @@
     <div class="wrap" style="position:relative;z-index:1;margin-top:44px">
       <p class="lede">Mate o ruído do seu microfone antes que ele chegue na chamada. Tudo roda no seu Mac.</p>
       <div class="cta">
-        <a class="btn" href="https://github.com/wellmota/deadnoise/releases/latest">Baixar para macOS</a>
-        <a class="btn ghost" href="https://github.com/wellmota/deadnoise">Ver o código</a>
+        <a class="btn" href="https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.zip">Baixar para macOS</a>
       </div>
-      <p class="req">Grátis, licença MIT. macOS 15 ou mais novo, Apple Silicon. Ainda sem notarização da Apple: veja como instalar abaixo.</p>
+      <p class="req">Grátis, licença MIT. macOS 15 ou mais novo, Apple Silicon. <a href="#instalar">Como instalar</a>.</p>
     </div>
   </div>
 
@@ -195,13 +206,23 @@
           <li><div><b>A voz limpa sai no “DeadNoise Microphone”.</b>É esse microfone que você escolhe no app da chamada.</div></li>
         </ol>
       </div>
-      <div>
-        <pre><span class="c"># instalar a partir do código</span>
+      <div id="instalar" class="install">
+        <a class="btn big" href="https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.zip">Baixar para macOS</a>
+        <ol class="steps">
+          <li>Abra o zip e dê dois cliques em <b>Instalar.command</b>.</li>
+          <li>Se o macOS bloquear, libere em <b>Ajustes &gt; Privacidade e Segurança &gt; Abrir Mesmo Assim</b>. O app ainda não é notarizado pela Apple.</li>
+          <li>Digite a senha do Mac para instalar o microfone virtual. O áudio reinicia por alguns segundos.</li>
+        </ol>
+        <details>
+          <summary>Instalar pelo Terminal</summary>
+          <pre><span class="c"># compila e instala a partir do código</span>
 git clone https://github.com/wellmota/deadnoise
 cd deadnoise
 ./build.sh install          <span class="c"># o app</span>
 ./Driver/build.sh install   <span class="c"># o microfone virtual</span></pre>
-        <p class="note">O segundo comando pede a senha e reinicia o áudio do Mac por alguns segundos. A transcrição exige o macOS 26. Gravar chamadas pode exigir o consentimento dos participantes.</p>
+          <p class="note">Precisa das ferramentas de linha de comando do Xcode. O segundo comando pede a senha.</p>
+        </details>
+        <p class="note">macOS 15 ou mais novo, Apple Silicon. A transcrição exige o macOS 26. Gravar chamadas pode exigir o consentimento dos participantes.</p>
       </div>
     </div>
   </section>

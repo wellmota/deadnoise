@@ -1,0 +1,6 @@
+#!/bin/bash
+# Fecha o app antes de substituir (o nome antigo era VolMix).
+pkill -x DeadNoise 2>/dev/null || true
+pkill -x VolMix 2>/dev/null || true
+/bin/rm -rf /Applications/VolMix.app
+exit 0
