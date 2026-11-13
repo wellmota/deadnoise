@@ -12,9 +12,9 @@ enum DriverInstaller {
 
         var errorDescription: String? {
             switch self {
-            case .notBundled: return "Esta cópia do app não traz o driver. Use o instalador do site."
-            case .cancelled: return "Instalação cancelada."
-            case .failed(let message): return "Não foi possível instalar o microfone virtual: \(message)"
+            case .notBundled: return String(localized: "Esta cópia do app não traz o driver. Use o instalador do site.")
+            case .cancelled: return String(localized: "Instalação cancelada.")
+            case .failed(let message): return String(localized: "Não foi possível instalar o microfone virtual: \(message)")
             }
         }
     }
@@ -48,14 +48,15 @@ enum DriverInstaller {
             "(/usr/bin/killall coreaudiod || true)",
         ].joined(separator: " && ")
 
+        let prompt = appleScriptEscaped(String(localized: "O DeadNoise precisa instalar o microfone virtual."))
         let script = "do shell script \"\(appleScriptEscaped(command))\" "
-            + "with prompt \"O DeadNoise precisa instalar o microfone virtual.\" with administrator privileges"
+            + "with prompt \"\(prompt)\" with administrator privileges"
         var error: NSDictionary?
         NSAppleScript(source: script)?.executeAndReturnError(&error)
         if let error {
             // -128: a pessoa clicou em Cancelar no pedido de senha.
             if (error[NSAppleScript.errorNumber] as? Int) == -128 { throw Failure.cancelled }
-            throw Failure.failed((error[NSAppleScript.errorMessage] as? String) ?? "erro desconhecido")
+            throw Failure.failed((error[NSAppleScript.errorMessage] as? String) ?? String(localized: "erro desconhecido"))
         }
     }
 

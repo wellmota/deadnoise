@@ -18,8 +18,8 @@ enum Transcription {
 
         var errorDescription: String? {
             switch self {
-            case .needsNewerSystem: return "A transcrição no aparelho exige o macOS 26 ou mais novo."
-            case .unsupportedLanguage(let id): return "O idioma \(id) não é suportado pela transcrição no aparelho."
+            case .needsNewerSystem: return String(localized: "A transcrição no aparelho exige o macOS 26 ou mais novo.")
+            case .unsupportedLanguage(let id): return String(localized: "O idioma \(id) não é suportado pela transcrição no aparelho.")
             }
         }
     }

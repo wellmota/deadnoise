@@ -13,7 +13,8 @@
 #
 # Também gera dist/appcast.xml, a lista de versões que o app consulta para se atualizar (Sparkle).
 # Ela vai como arquivo do release do GitHub; o app lê sempre a do release mais recente.
-# Notas da versão: release-notes/<versão>.md (obrigatório; aparece na janela de atualização e no GitHub).
+# Notas da versão: release-notes/<versão>.md (português) e release-notes/<versão>.en.md (inglês), obrigatórias.
+# Aparecem na janela de atualização, cada pessoa no idioma do seu Mac, e no GitHub.
 # Publicar depois: ./publish.sh
 #
 # Uso: ./release.sh          -> assina, notariza e grampeia
@@ -29,11 +30,14 @@ VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Resourc
 BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' Resources/Info.plist)
 FEED=$(/usr/libexec/PlistBuddy -c 'Print :SUFeedURL' Resources/Info.plist)
 NOTES="release-notes/$VERSION.md"
+NOTES_EN="release-notes/$VERSION.en.md"
 SPARKLE_BIN=.build/artifacts/sparkle/Sparkle/bin
 SPARKLE_ACCOUNT="${SPARKLE_ACCOUNT:-deadnoise}"
 REPO_URL=https://github.com/wellmota/deadnoise
 
 [[ -s "$NOTES" ]] || { echo "Faltam as notas da versão em $NOTES."; exit 1; }
+[[ -s "$NOTES_EN" ]] || { echo "Faltam as notas da versão em inglês em $NOTES_EN."; exit 1; }
+./check-l10n.sh || { echo "Há textos sem tradução em inglês (veja acima)."; exit 1; }
 # O Sparkle compara CFBundleVersion: ele precisa crescer a cada versão, senão ninguém recebe a atualização.
 PUBLISHED=$(curl -fsSL "$FEED" 2>/dev/null | sed -n 's:.*<sparkle\:version>\([0-9]*\)</sparkle\:version>.*:\1:p' | head -1 || true)
 if [[ -n "$PUBLISHED" && "$BUILD" -le "$PUBLISHED" ]]; then
@@ -65,6 +69,7 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$DRIVER/Contents/MacOS
 cp .build/apple/Products/Release/VolMix "$APP/Contents/MacOS/DeadNoise"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
+cp -R Resources/Localization/*.lproj "$APP/Contents/Resources/"
 cp Driver/Info.plist "$DRIVER/Contents/Info.plist"
 clang -O2 -Wall -Wno-unused-parameter -arch arm64 -arch x86_64 -mmacosx-version-min=15.0 -bundle \
   -o "$DRIVER/Contents/MacOS/VolMixAudio" Driver/VolMixAudio.c -framework CoreAudio -framework CoreFoundation
@@ -130,6 +135,7 @@ spctl -a -vvv -t open --context context:primary-signature "$DMG"
 #    já grampeado. O próprio appcast também é assinado (SURequireSignedFeed no Info.plist).
 ENCLOSURE=$("$SPARKLE_BIN/sign_update" --account "$SPARKLE_ACCOUNT" "$DMG")
 NOTES_TEXT=$(sed 's/]]>/]]]]><![CDATA[>/g' "$NOTES")
+NOTES_TEXT_EN=$(sed 's/]]>/]]]]><![CDATA[>/g' "$NOTES_EN")
 APPCAST=dist/appcast.xml
 cat > "$APPCAST" <<XML
 <?xml version="1.0" encoding="utf-8"?>
@@ -144,7 +150,8 @@ cat > "$APPCAST" <<XML
       <sparkle:version>$BUILD</sparkle:version>
       <sparkle:shortVersionString>$VERSION</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
-      <description sparkle:format="markdown"><![CDATA[$NOTES_TEXT]]></description>
+      <description xml:lang="en" sparkle:format="markdown"><![CDATA[$NOTES_TEXT_EN]]></description>
+      <description xml:lang="pt" sparkle:format="markdown"><![CDATA[$NOTES_TEXT]]></description>
       <enclosure url="$REPO_URL/releases/download/v$VERSION/DeadNoise.dmg" type="application/octet-stream" $ENCLOSURE/>
     </item>
   </channel>

@@ -16,8 +16,8 @@ final class MeetingRecorder {
         let offset: Double
     }
 
-    static let me = "Eu"
-    static let others = "Outros"
+    static let me = String(localized: "Eu", comment: "Quem fala na transcrição: você")
+    static let others = String(localized: "Outros", comment: "Quem fala na transcrição: os outros participantes")
 
     let folder: URL
     let startDate = Date()
@@ -116,16 +116,16 @@ private final class SystemCapture {
         desc.name = "DeadNoise gravação"
         desc.isPrivate = true
         desc.muteBehavior = .unmuted
-        try check(AudioHardwareCreateProcessTap(desc, &tapID), "Falha ao criar o tap de gravação")
+        try check(AudioHardwareCreateProcessTap(desc, &tapID), String(localized: "Falha ao criar o tap de gravação"))
 
         var tapFormat = try CA.read(tapID, kAudioTapPropertyFormat, as: AudioStreamBasicDescription())
         guard let format = AVAudioFormat(streamDescription: &tapFormat) else {
-            throw CoreAudioError(status: kAudioFormatUnsupportedDataFormatError, context: "Formato de áudio do sistema não suportado")
+            throw CoreAudioError(status: kAudioFormatUnsupportedDataFormatError, context: String(localized: "Formato de áudio do sistema não suportado"))
         }
         let file = try AVAudioFile(forWriting: url, settings: aacSettings(for: format),
                                    commonFormat: .pcmFormatFloat32, interleaved: format.isInterleaved)
         guard let buffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: 16384) else {
-            throw CoreAudioError(status: kAudio_MemFullError, context: "Sem memória para gravar")
+            throw CoreAudioError(status: kAudio_MemFullError, context: String(localized: "Sem memória para gravar"))
         }
         self.file = file
         self.buffer = buffer
@@ -145,7 +145,7 @@ private final class SystemCapture {
             ]],
         ]
         try check(AudioHardwareCreateAggregateDevice(aggregateDesc as CFDictionary, &aggregateID),
-                  "Falha ao criar o dispositivo de gravação")
+                  String(localized: "Falha ao criar o dispositivo de gravação"))
 
         try check(AudioDeviceCreateIOProcIDWithBlock(&ioProcID, aggregateID, queue) { [weak self] _, input, _, output, _ in
             // Não tocamos nada: a saída do agregado fica em silêncio.
@@ -153,9 +153,9 @@ private final class SystemCapture {
                 if let data = buf.mData { memset(data, 0, Int(buf.mDataByteSize)) }
             }
             self?.write(input)
-        }, "Falha ao criar o IOProc de gravação")
+        }, String(localized: "Falha ao criar o IOProc de gravação"))
 
-        try check(AudioDeviceStart(aggregateID, ioProcID), "Falha ao iniciar a gravação do áudio do sistema")
+        try check(AudioDeviceStart(aggregateID, ioProcID), String(localized: "Falha ao iniciar a gravação do áudio do sistema"))
     }
 
     /// Roda na fila de IO.
@@ -209,7 +209,7 @@ private final class MicCapture {
         let input = engine.inputNode
         let format = input.outputFormat(forBus: 0)
         guard format.sampleRate > 0, format.channelCount > 0 else {
-            throw CoreAudioError(status: kAudioHardwareBadDeviceError, context: "Nenhum microfone disponível")
+            throw CoreAudioError(status: kAudioHardwareBadDeviceError, context: String(localized: "Nenhum microfone disponível"))
         }
         file = try AVAudioFile(forWriting: url, settings: aacSettings(for: format),
                                commonFormat: .pcmFormatFloat32, interleaved: format.isInterleaved)

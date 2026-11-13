@@ -93,7 +93,7 @@ enum CA {
         var dev = device
         try check(AudioObjectSetPropertyData(AudioObjectID(kAudioObjectSystemObject), &addr, 0, nil,
                                              UInt32(MemoryLayout<AudioDeviceID>.size), &dev),
-                  "Não foi possível trocar o dispositivo")
+                  String(localized: "Não foi possível trocar o dispositivo"))
     }
 
     // MARK: Mudo do microfone
@@ -107,7 +107,7 @@ enum CA {
         var addr = address(kAudioDevicePropertyMute, scope: kAudioObjectPropertyScopeInput)
         var value: UInt32 = muted ? 1 : 0
         try check(AudioObjectSetPropertyData(device, &addr, 0, nil, UInt32(MemoryLayout<UInt32>.size), &value),
-                  "Este microfone não permite silenciar pelo sistema")
+                  String(localized: "Este microfone não permite silenciar pelo sistema"))
     }
 
     static func isRunningSomewhere(_ device: AudioDeviceID) -> Bool {

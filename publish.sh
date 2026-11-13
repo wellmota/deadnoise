@@ -27,6 +27,10 @@ SIG=$(sed -n 's/.*sparkle:edSignature="\([^"]*\)".*/\1/p' dist/appcast.xml)
 "$SIGN_UPDATE" --account "$ACCOUNT" --verify dist/DeadNoise.dmg "$SIG" >/dev/null || fail "O .dmg mudou depois de assinado. Rode ./release.sh de novo."
 xcrun stapler validate -q dist/DeadNoise.dmg || fail "O .dmg não está notarizado."
 
+# Notas no GitHub: português e, embaixo, inglês.
+BODY=$(mktemp)
+{ cat "release-notes/$VERSION.md"; printf '\n---\n\n**English**\n\n'; cat "release-notes/$VERSION.en.md"; } > "$BODY"
 gh release create "$TAG" "${FILES[@]}" --target "$(git rev-parse HEAD)" \
-  --title "DeadNoise $VERSION" --notes-file "release-notes/$VERSION.md"
+  --title "DeadNoise $VERSION" --notes-file "$BODY"
+/bin/rm -f "$BODY"
 echo "Publicado: $TAG. Os apps instalados vão encontrar a atualização na próxima procura (até 24 h)."

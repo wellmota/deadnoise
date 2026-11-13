@@ -34,10 +34,10 @@ final class MicDenoiser {
 
         let inFormat = captureEngine.inputNode.outputFormat(forBus: 0)
         guard inFormat.sampleRate > 0, inFormat.channelCount > 0 else {
-            throw CoreAudioError(status: kAudioHardwareBadDeviceError, context: "O microfone não está entregando áudio")
+            throw CoreAudioError(status: kAudioHardwareBadDeviceError, context: String(localized: "O microfone não está entregando áudio"))
         }
         guard let mono = AVAudioFormat(standardFormatWithSampleRate: inFormat.sampleRate, channels: 1) else {
-            throw CoreAudioError(status: kAudioFormatUnsupportedDataFormatError, context: "Formato do microfone não suportado")
+            throw CoreAudioError(status: kAudioFormatUnsupportedDataFormatError, context: String(localized: "Formato do microfone não suportado"))
         }
 
         let ring = SampleRing(capacity: 1 << 16, sampleRate: inFormat.sampleRate)
@@ -96,7 +96,7 @@ final class MicDenoiser {
     /// fonte -> (mono vira estéreo) -> isolamento de voz -> mixer principal -> saída.
     static func buildChain(in engine: AVAudioEngine, from source: AVAudioNode, format: AVAudioFormat) throws {
         guard let stereo = AVAudioFormat(standardFormatWithSampleRate: format.sampleRate, channels: 2) else {
-            throw CoreAudioError(status: kAudioFormatUnsupportedDataFormatError, context: "Formato do microfone não suportado")
+            throw CoreAudioError(status: kAudioFormatUnsupportedDataFormatError, context: String(localized: "Formato do microfone não suportado"))
         }
         let isolation = AVAudioUnitEffect(audioComponentDescription: AudioComponentDescription(
             componentType: kAudioUnitType_Effect,
@@ -113,7 +113,7 @@ final class MicDenoiser {
 
         try check(AudioUnitSetParameter(isolation.audioUnit, kAUSoundIsolationParam_WetDryMixPercent,
                                         kAudioUnitScope_Global, 0, 100, 0),
-                  "Isolamento de voz indisponível neste macOS")
+                  String(localized: "Isolamento de voz indisponível neste macOS"))
     }
 }
 

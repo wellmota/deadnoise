@@ -115,8 +115,8 @@ final class MeetingController: ObservableObject {
             autoStarted = true
             start()
         } else {
-            Notifier.post(title: "Chamada detectada",
-                          body: "\(apps[0]) está usando o microfone. Abra o DeadNoise para gravar e transcrever.")
+            Notifier.post(title: String(localized: "Chamada detectada"),
+                          body: String(localized: "\(apps[0]) está usando o microfone. Abra o DeadNoise para gravar e transcrever."))
         }
     }
 
@@ -141,14 +141,14 @@ final class MeetingController: ObservableObject {
             if !driverMissing { driverMissing = true }
             let canInstall = DriverInstaller.bundledDriver != nil
             return setCleanMic(nil, note: canInstall
-                ? "Falta o microfone virtual. A instalação pede a senha do Mac e reinicia o áudio por alguns segundos."
-                : "Falta o microfone virtual. Instale pelo instalador do site ou com ./Driver/build.sh install.")
+                ? String(localized: "Falta o microfone virtual. A instalação pede a senha do Mac e reinicia o áudio por alguns segundos.")
+                : String(localized: "Falta o microfone virtual. Instale pelo instalador do site ou com ./Driver/build.sh install."))
         }
         if driverMissing { driverMissing = false }
         let outdated = DriverInstaller.installedIsOutdated
         if driverOutdated != outdated { driverOutdated = outdated }
         guard inputDevice != kAudioObjectUnknown, inputDevice != virtualMic else {
-            return setCleanMic(nil, note: "Em Entrada, escolha o seu microfone de verdade. O “\(virtualMicName)” é para os apps de chamada.")
+            return setCleanMic(nil, note: String(localized: "Em Entrada, escolha o seu microfone de verdade. O “\(virtualMicName)” é para os apps de chamada."))
         }
 
         switch AVCaptureDevice.authorizationStatus(for: .audio) {
@@ -162,13 +162,13 @@ final class MeetingController: ObservableObject {
             }
             return
         default:
-            return setCleanMic(nil, note: "Sem permissão de microfone. Libere o DeadNoise em Ajustes > Privacidade e Segurança > Microfone.")
+            return setCleanMic(nil, note: String(localized: "Sem permissão de microfone. Libere o DeadNoise em Ajustes > Privacidade e Segurança > Microfone."))
         }
 
         // Só processa enquanto algum app está lendo o microfone virtual (o DeadNoise nunca lê dele),
         // para não deixar o microfone real aberto o dia todo.
         guard CA.isRunningSomewhere(virtualMic) else {
-            return setCleanMic(nil, note: "Pronto. No app da chamada, escolha o microfone “\(virtualMicName)”.")
+            return setCleanMic(nil, note: String(localized: "Pronto. No app da chamada, escolha o microfone “\(virtualMicName)”."))
         }
 
         let route = [inputDevice, appIO]
@@ -188,10 +188,10 @@ final class MeetingController: ObservableObject {
                 }
             }
             denoiserRoute = route
-            setCleanMic(new, note: "Ativo: seu ruído não chega na chamada.")
+            setCleanMic(new, note: String(localized: "Ativo: seu ruído não chega na chamada."))
         } catch {
             failedRoute = route
-            setCleanMic(nil, note: "Não foi possível iniciar o cancelamento de ruído: \(error.localizedDescription)")
+            setCleanMic(nil, note: String(localized: "Não foi possível iniciar o cancelamento de ruído: \(error.localizedDescription)"))
         }
     }
 
@@ -199,7 +199,7 @@ final class MeetingController: ObservableObject {
     func installDriver() {
         do {
             try DriverInstaller.install()
-            cleanMicNote = "Microfone virtual instalado. Aguardando o áudio reiniciar…"
+            cleanMicNote = String(localized: "Microfone virtual instalado. Aguardando o áudio reiniciar…")
             driverOutdated = DriverInstaller.installedIsOutdated
             Task { @MainActor in
                 // O serviço de áudio leva alguns segundos para voltar e publicar o dispositivo novo.
@@ -252,7 +252,7 @@ final class MeetingController: ObservableObject {
         do {
             try recorder.startSystem(outputUID: uid, excluding: excludedProcesses)
         } catch {
-            status = "A gravação do áudio dos outros parou: \(error.localizedDescription)"
+            status = String(localized: "A gravação do áudio dos outros parou: \(error.localizedDescription)")
         }
     }
 
@@ -261,12 +261,12 @@ final class MeetingController: ObservableObject {
     private func start() {
         guard phase == .idle, !isStarting else { return }
         guard let outputUID else {
-            status = "Nenhum dispositivo de saída encontrado."
+            status = String(localized: "Nenhum dispositivo de saída encontrado.")
             autoStarted = false
             return
         }
         isStarting = true
-        let title = callApps.first ?? "Gravação"
+        let title = callApps.first ?? String(localized: "Gravação")
 
         Task { @MainActor in
             defer { isStarting = false }
@@ -293,15 +293,15 @@ final class MeetingController: ObservableObject {
                 recordingTitle = title
                 phase = .recording(since: rec.startDate)
                 if !micAllowed {
-                    status = "Sem permissão de microfone: gravando só o áudio dos outros."
+                    status = String(localized: "Sem permissão de microfone: gravando só o áudio dos outros.")
                 } else if let micError = rec.micError {
-                    status = "Microfone não gravado: \(micError)"
+                    status = String(localized: "Microfone não gravado: \(micError)")
                 } else {
                     status = nil
                 }
             } catch {
                 autoStarted = false
-                status = "\(error.localizedDescription). Verifique Ajustes > Privacidade e Segurança > Gravação de Tela e Áudio do Sistema."
+                status = String(localized: "\(error.localizedDescription). Verifique Ajustes > Privacidade e Segurança > Gravação de Tela e Áudio do Sistema.")
             }
         }
     }
@@ -312,7 +312,7 @@ final class MeetingController: ObservableObject {
         recorder = nil
         autoStarted = false
         phase = .processing
-        status = "Transcrevendo…"
+        status = String(localized: "Transcrevendo…")
 
         let segments = rec.segments
         let folder = rec.folder
@@ -327,7 +327,8 @@ final class MeetingController: ObservableObject {
             phase = .idle
             status = result.message
             lastNote = result.note ?? folder
-            Notifier.post(title: result.note == nil ? "Gravação salva" : "Notas da reunião prontas", body: result.message)
+            Notifier.post(title: result.note == nil ? String(localized: "Gravação salva") : String(localized: "Notas da reunião prontas"),
+                          body: result.message)
         }
     }
 
@@ -336,29 +337,30 @@ final class MeetingController: ObservableObject {
                                             started: Date, duration: Double, languageID: String,
                                             languageName: String) async -> (note: URL?, message: String) {
         guard Transcription.isSupported else {
-            return (nil, "Áudio salvo. A transcrição no aparelho exige o macOS 26.")
+            return (nil, String(localized: "Áudio salvo. A transcrição no aparelho exige o macOS 26."))
         }
         do {
             let (lines, skipped) = try await Transcription.transcribe(segments: segments, in: folder,
                                                                       locale: Locale(identifier: languageID))
-            guard !lines.isEmpty else { return (nil, "Áudio salvo. Nenhuma fala foi reconhecida.") }
+            guard !lines.isEmpty else { return (nil, String(localized: "Áudio salvo. Nenhuma fala foi reconhecida.")) }
 
             let summary = await Transcription.summarize(lines, language: languageName)
             var text = "# \(title) — \(started.formatted(date: .abbreviated, time: .shortened))\n\n"
-            text += "- Duração: \(Transcription.timestamp(duration))\n- Idioma: \(languageName)\n"
-            if !skipped.isEmpty { text += "- Trechos não transcritos: \(skipped.joined(separator: ", "))\n" }
-            if let summary { text += "\n## Resumo\n\n\(summary)\n" }
-            text += "\n## Transcrição\n\n\(Transcription.markdown(lines))\n"
+            text += "- " + String(localized: "Duração: \(Transcription.timestamp(duration))") + "\n"
+            text += "- " + String(localized: "Idioma: \(languageName)") + "\n"
+            if !skipped.isEmpty { text += "- " + String(localized: "Trechos não transcritos: \(skipped.joined(separator: ", "))") + "\n" }
+            if let summary { text += "\n## " + String(localized: "Resumo") + "\n\n\(summary)\n" }
+            text += "\n## " + String(localized: "Transcrição") + "\n\n\(Transcription.markdown(lines))\n"
 
             let note = folder.appendingPathComponent("transcricao.md")
             try text.write(to: note, atomically: true, encoding: .utf8)
             var message = summary == nil
-                ? "Transcrição salva. Para ter o resumo, ative a Apple Intelligence nos Ajustes do Sistema."
-                : "Transcrição e resumo salvos."
-            if !skipped.isEmpty { message += " \(skipped.count) trecho(s) não puderam ser transcritos." }
+                ? String(localized: "Transcrição salva. Para ter o resumo, ative a Apple Intelligence nos Ajustes do Sistema.")
+                : String(localized: "Transcrição e resumo salvos.")
+            if !skipped.isEmpty { message += " " + String(localized: "\(skipped.count) trecho(s) não puderam ser transcritos.") }
             return (note, message)
         } catch {
-            return (nil, "Áudio salvo, mas a transcrição falhou: \(error.localizedDescription)")
+            return (nil, String(localized: "Áudio salvo, mas a transcrição falhou: \(error.localizedDescription)"))
         }
     }
 

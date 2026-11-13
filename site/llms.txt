@@ -18,7 +18,7 @@ English: DeadNoise is a free, open-source (MIT) macOS menu bar app that removes 
 - Atualização automática: o app procura versões novas uma vez por dia; as atualizações são assinadas.
 - Privacidade: o áudio é processado localmente; o app não tem conta nem servidor.
 - Limites: não remove o ruído dos outros participantes da chamada.
-- Idioma da interface: português (Brasil).
+- Idiomas da interface: português e inglês (segue o idioma do macOS).
 
 ## Links
 
@@ -35,4 +35,4 @@ English: DeadNoise is a free, open-source (MIT) macOS menu bar app that removes 
 - Record and transcribe: records the call and writes a transcript split into "Me" and "Others", all on-device.
 - Free, MIT license. macOS 15 or later, universal (Apple Silicon and Intel); transcription requires macOS 26.
 - Signed automatic updates. Installers signed with Developer ID and notarized by Apple.
-- The app's interface is currently in Brazilian Portuguese.
+- The app is in English and Portuguese and follows the macOS language.

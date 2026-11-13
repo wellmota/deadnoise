@@ -60,7 +60,7 @@ struct MenuView: View {
 
     private var header: some View {
         HStack(spacing: 8) {
-            Text("DeadNoise").font(.headline)
+            Text(verbatim: "DeadNoise").font(.headline)
             Spacer()
             CallBadge()
             Menu {
@@ -132,11 +132,11 @@ struct Card<Content: View>: View {
 
 /// Título de seção + conteúdo, com um controle opcional à direita do título.
 struct Section<Trailing: View, Content: View>: View {
-    let title: String
+    let title: LocalizedStringKey
     @ViewBuilder var trailing: Trailing
     @ViewBuilder var content: Content
 
-    init(_ title: String, @ViewBuilder trailing: () -> Trailing = { EmptyView() }, @ViewBuilder content: () -> Content) {
+    init(_ title: LocalizedStringKey, @ViewBuilder trailing: () -> Trailing = { EmptyView() }, @ViewBuilder content: () -> Content) {
         self.title = title
         self.trailing = trailing()
         self.content = content()
@@ -160,7 +160,7 @@ struct Section<Trailing: View, Content: View>: View {
 
 /// Linha "título + explicação" com um controle alinhado à direita.
 struct SettingRow<Control: View>: View {
-    let title: String
+    let title: LocalizedStringKey
     var subtitle: String? = nil
     var subtitleColor: Color = .secondary
     @ViewBuilder var control: Control
@@ -212,7 +212,7 @@ struct CallBadge: View {
 // MARK: Dispositivos
 
 struct DeviceRow<Accessory: View>: View {
-    let title: String
+    let title: LocalizedStringKey
     let icon: String
     let devices: [CA.Device]
     let selection: AudioDeviceID
@@ -242,7 +242,7 @@ struct DeviceRow<Accessory: View>: View {
                 if !bluetooth.isEmpty {
                     Divider()
                     ForEach(bluetooth, id: \.address) { h in
-                        Text(connecting == h.address ? "\(h.name) (conectando…)" : "\(h.name) (conectar)")
+                        Text(connecting == h.address ? String(localized: "\(h.name) (conectando…)") : String(localized: "\(h.name) (conectar)"))
                             .tag("bt:\(h.address)")
                     }
                 }
@@ -257,7 +257,7 @@ struct DeviceRow<Accessory: View>: View {
 }
 
 extension DeviceRow where Accessory == EmptyView {
-    init(title: String, icon: String, devices: [CA.Device], selection: AudioDeviceID,
+    init(title: LocalizedStringKey, icon: String, devices: [CA.Device], selection: AudioDeviceID,
          onSelect: @escaping (AudioDeviceID) -> Void,
          bluetooth: [BluetoothAudio.Headset] = [], connecting: String? = nil,
          onConnect: @escaping (BluetoothAudio.Headset) -> Void = { _ in }) {
@@ -281,8 +281,8 @@ struct MicMuteButton: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .help(muted ? "Microfone mudo. Clique para reativar" : "Silenciar o microfone")
-            .accessibilityLabel(muted ? "Reativar o microfone" : "Silenciar o microfone")
+            .help(muted ? String(localized: "Microfone mudo. Clique para reativar") : String(localized: "Silenciar o microfone"))
+            .accessibilityLabel(muted ? String(localized: "Reativar o microfone") : String(localized: "Silenciar o microfone"))
         }
     }
 }
@@ -309,7 +309,7 @@ struct CleanMicCard: View {
     var body: some View {
         Card {
             SettingRow(title: "Cancelar meu ruído",
-                       subtitle: meeting.cleanMicNote ?? "Remove o ruído do seu microfone antes de chegar na chamada.",
+                       subtitle: meeting.cleanMicNote ?? String(localized: "Remove o ruído do seu microfone antes de chegar na chamada."),
                        subtitleColor: meeting.cleanMicActive ? .green : .secondary) {
                 Toggle("Cancelar meu ruído", isOn: $meeting.cleanMic)
                     .labelsHidden()
@@ -478,7 +478,7 @@ struct AppRow: View {
                     Text("em silêncio").font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
-                Text(muted ? "Mudo" : "\(Int((gain * 100).rounded()))%")
+                (muted ? Text("Mudo") : Text(verbatim: "\(Int((gain * 100).rounded()))%"))
                     .font(.callout.monospacedDigit())
                     .foregroundStyle(muted ? Color.red : Color.secondary)
                     .onTapGesture(count: 2) { model.setGain(1, for: app.id) }
@@ -494,8 +494,8 @@ struct AppRow: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .help(muted ? "Reativar o som de \(app.name)" : "Silenciar \(app.name)")
-                .accessibilityLabel(muted ? "Reativar o som de \(app.name)" : "Silenciar \(app.name)")
+                .help(muted ? String(localized: "Reativar o som de \(app.name)") : String(localized: "Silenciar \(app.name)"))
+                .accessibilityLabel(muted ? String(localized: "Reativar o som de \(app.name)") : String(localized: "Silenciar \(app.name)"))
 
                 Slider(
                     value: Binding(get: { Double(gain) }, set: { model.setGain(Float($0), for: app.id) }),

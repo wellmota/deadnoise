@@ -1,0 +1,4 @@
+/* Textos dos pedidos de permissão do macOS, em inglês. */
+"NSMicrophoneUsageDescription" = "DeadNoise records your microphone to include your voice in meeting transcripts.";
+"NSAudioCaptureUsageDescription" = "DeadNoise captures app audio to set volume per app, cancel noise and record or transcribe meetings.";
+"NSBluetoothAlwaysUsageDescription" = "DeadNoise connects paired Bluetooth headphones (such as AirPods) when you choose them as the output.";

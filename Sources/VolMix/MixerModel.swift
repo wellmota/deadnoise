@@ -90,7 +90,7 @@ final class MixerModel: ObservableObject {
         do {
             if enabled { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
         } catch {
-            lastError = "Abrir ao iniciar sessão: \(error.localizedDescription)"
+            lastError = String(localized: "Abrir ao iniciar sessão: \(error.localizedDescription)")
         }
         launchAtLogin = SMAppService.mainApp.status == .enabled
     }
@@ -181,12 +181,12 @@ final class MixerModel: ObservableObject {
         }
 
         taps.removeValue(forKey: id)?.invalidate()
-        guard let outputUID else { lastError = "Nenhum dispositivo de saída encontrado."; return }
+        guard let outputUID else { lastError = String(localized: "Nenhum dispositivo de saída encontrado."); return }
         do {
             taps[id] = try ProcessTap(processObjectIDs: entry.processObjectIDs, outputUID: outputUID, name: entry.name, gain: g)
             lastError = nil
         } catch {
-            lastError = "\(error.localizedDescription). Verifique Ajustes > Privacidade e Segurança > Gravação de Tela e Áudio do Sistema."
+            lastError = String(localized: "\(error.localizedDescription). Verifique Ajustes > Privacidade e Segurança > Gravação de Tela e Áudio do Sistema.")
         }
     }
 
@@ -238,7 +238,7 @@ final class MixerModel: ObservableObject {
                     return
                 }
             }
-            lastError = "Não foi possível conectar \(headset.name)."
+            lastError = String(localized: "Não foi possível conectar \(headset.name).")
         }
     }
 

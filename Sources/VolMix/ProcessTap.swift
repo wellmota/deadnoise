@@ -52,7 +52,7 @@ final class ProcessTap {
         desc.name = "DeadNoise \(name)"
         desc.isPrivate = true
         desc.muteBehavior = .mutedWhenTapped
-        try check(AudioHardwareCreateProcessTap(desc, &tapID), "Falha ao criar o tap de \(name)")
+        try check(AudioHardwareCreateProcessTap(desc, &tapID), String(localized: "Falha ao criar o tap de \(name)"))
 
         let tapFormat = try CA.read(tapID, kAudioTapPropertyFormat, as: AudioStreamBasicDescription())
         let tapNonInterleaved = tapFormat.mFormatFlags & kAudioFormatFlagIsNonInterleaved != 0
@@ -73,15 +73,15 @@ final class ProcessTap {
             ]],
         ]
         try check(AudioHardwareCreateAggregateDevice(aggregateDesc as CFDictionary, &aggregateID),
-                  "Falha ao criar o dispositivo agregado de \(name)")
+                  String(localized: "Falha ao criar o dispositivo agregado de \(name)"))
 
         // 3. IOProc: copia tap -> saída aplicando ganho.
         let box = gainBox
         try check(AudioDeviceCreateIOProcIDWithBlock(&ioProcID, aggregateID, queue) { _, input, _, output, _ in
             ProcessTap.render(input: input, output: output, tapBufferCount: tapBufferCount, box: box)
-        }, "Falha ao criar o IOProc de \(name)")
+        }, String(localized: "Falha ao criar o IOProc de \(name)"))
 
-        try check(AudioDeviceStart(aggregateID, ioProcID), "Falha ao iniciar o áudio de \(name)")
+        try check(AudioDeviceStart(aggregateID, ioProcID), String(localized: "Falha ao iniciar o áudio de \(name)"))
     }
 
     func invalidate() {

@@ -11,6 +11,8 @@ APP=build/DeadNoise.app
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp .build/release/VolMix "$APP/Contents/MacOS/DeadNoise"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
+# Traduções (o app segue o idioma do macOS; inglês para quem não usa português).
+cp -R Resources/Localization/*.lproj "$APP/Contents/Resources/"
 # O app leva o driver dentro, para poder instalar o microfone virtual sozinho.
 ./Driver/build.sh >/dev/null
 cp -R build/VolMixAudio.driver "$APP/Contents/Resources/VolMixAudio.driver"
