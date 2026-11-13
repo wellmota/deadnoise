@@ -2,10 +2,16 @@ import AVFoundation
 import AudioToolbox
 import CoreAudio
 import Foundation
+import Synchronization
 
 /// "Cancelar meu ruído": lê o microfone real, passa pelo isolamento de voz da Apple
 /// (AUSoundIsolation, roda no aparelho) e toca o resultado no dispositivo oculto do driver
 /// do DeadNoise. O driver devolve esse áudio no "DeadNoise Microphone", que os apps de chamada usam.
+///
+/// No macOS um único AVAudioEngine não aceita dispositivos diferentes na entrada e na saída
+/// (o segundo setDeviceID falha com -10851). Por isso são dois motores ligados por um buffer circular:
+///   captura: microfone real -> AVAudioSinkNode -> buffer
+///   saída:   buffer -> AVAudioSourceNode -> (mono vira estéreo) -> isolamento de voz -> App IO
 ///
 /// O atraso total fica em torno de 0,1 s.
 final class MicDenoiser {
@@ -15,35 +21,76 @@ final class MicDenoiser {
     /// Nome usado só enquanto o dispositivo não foi encontrado; com o driver instalado, vale o nome real.
     static let micName = "DeadNoise Microphone"
 
-    private let engine = AVAudioEngine()
-    private var observer: NSObjectProtocol?
+    private let captureEngine = AVAudioEngine()
+    private let outputEngine = AVAudioEngine()
+    private let ring: SampleRing
+    private var observers: [NSObjectProtocol] = []
     var onConfigurationChange: (() -> Void)?
 
     init(inputDevice: AudioDeviceID, outputDevice: AudioDeviceID) throws {
-        try engine.inputNode.auAudioUnit.setDeviceID(inputDevice)
-        try engine.outputNode.auAudioUnit.setDeviceID(outputDevice)
+        // Saída primeiro, num motor que nunca toca no inputNode.
+        try outputEngine.outputNode.auAudioUnit.setDeviceID(outputDevice)
+        try captureEngine.inputNode.auAudioUnit.setDeviceID(inputDevice)
 
-        let format = engine.inputNode.outputFormat(forBus: 0)
-        guard format.sampleRate > 0, format.channelCount > 0 else {
+        let inFormat = captureEngine.inputNode.outputFormat(forBus: 0)
+        guard inFormat.sampleRate > 0, inFormat.channelCount > 0 else {
             throw CoreAudioError(status: kAudioHardwareBadDeviceError, context: "O microfone não está entregando áudio")
         }
-        try Self.buildChain(in: engine, from: engine.inputNode, format: format)
+        guard let mono = AVAudioFormat(standardFormatWithSampleRate: inFormat.sampleRate, channels: 1) else {
+            throw CoreAudioError(status: kAudioFormatUnsupportedDataFormatError, context: "Formato do microfone não suportado")
+        }
 
-        engine.prepare()
-        try engine.start()
+        let ring = SampleRing(capacity: 1 << 16, sampleRate: inFormat.sampleRate)
+        self.ring = ring
 
-        observer = NotificationCenter.default.addObserver(forName: .AVAudioEngineConfigurationChange,
-                                                          object: engine, queue: .main) { [weak self] _ in
-            self?.onConfigurationChange?()
+        // Captura: só o primeiro canal do microfone (é o que os microfones de notebook e fones entregam).
+        let sink = AVAudioSinkNode { _, frames, abl in
+            let buffers = UnsafeMutableAudioBufferListPointer(UnsafeMutablePointer(mutating: abl))
+            guard let first = buffers.first, let data = first.mData else { return noErr }
+            let channels = Int(max(1, first.mNumberChannels)) // >1 quando vem intercalado
+            ring.write(data.assumingMemoryBound(to: Float.self), frames: Int(frames), stride: channels)
+            return noErr
+        }
+        captureEngine.attach(sink)
+        captureEngine.connect(captureEngine.inputNode, to: sink, format: inFormat)
+
+        // Saída: lê do buffer no ritmo do App IO.
+        let source = AVAudioSourceNode(format: mono) { _, _, frames, abl in
+            let buffers = UnsafeMutableAudioBufferListPointer(abl)
+            for buffer in buffers {
+                guard let data = buffer.mData else { continue }
+                ring.read(into: data.assumingMemoryBound(to: Float.self), frames: Int(frames))
+            }
+            return noErr
+        }
+        outputEngine.attach(source)
+        try Self.buildChain(in: outputEngine, from: source, format: mono)
+
+        outputEngine.prepare()
+        captureEngine.prepare()
+        try outputEngine.start()
+        do {
+            try captureEngine.start()
+        } catch {
+            outputEngine.stop()
+            throw error
+        }
+
+        for engine in [captureEngine, outputEngine] {
+            observers.append(NotificationCenter.default.addObserver(forName: .AVAudioEngineConfigurationChange,
+                                                                    object: engine, queue: .main) { [weak self] _ in
+                self?.onConfigurationChange?()
+            })
         }
     }
 
     deinit { stop() }
 
     func stop() {
-        if let observer { NotificationCenter.default.removeObserver(observer) }
-        observer = nil
-        engine.stop()
+        observers.forEach(NotificationCenter.default.removeObserver)
+        observers = []
+        captureEngine.stop()
+        outputEngine.stop()
     }
 
     /// fonte -> (mono vira estéreo) -> isolamento de voz -> mixer principal -> saída.
@@ -67,5 +114,44 @@ final class MicDenoiser {
         try check(AudioUnitSetParameter(isolation.audioUnit, kAUSoundIsolationParam_WetDryMixPercent,
                                         kAudioUnitScope_Global, 0, 100, 0),
                   "Isolamento de voz indisponível neste macOS")
+    }
+}
+
+/// Buffer circular de um produtor (thread de captura) e um consumidor (thread de saída), sem trava.
+/// Os dois relógios (microfone e App IO) andam um pouco diferentes: quando sobra áudio demais,
+/// pula para perto do fim para o atraso não crescer; quando falta, entrega silêncio.
+private final class SampleRing: @unchecked Sendable {
+    private let storage: UnsafeMutablePointer<Float>
+    private let mask: Int
+    private let written = Atomic<Int>(0)
+    private let readPos = Atomic<Int>(0)
+    private let target: Int      // atraso de equilíbrio
+    private let maxBacklog: Int  // acima disso, descarta o excesso
+
+    init(capacity: Int, sampleRate: Double) {
+        precondition(capacity & (capacity - 1) == 0)
+        storage = .allocate(capacity: capacity)
+        storage.initialize(repeating: 0, count: capacity)
+        mask = capacity - 1
+        target = Int(sampleRate * 0.03)
+        maxBacklog = min(Int(sampleRate * 0.12), capacity / 2)
+    }
+
+    deinit { storage.deallocate() }
+
+    func write(_ src: UnsafePointer<Float>, frames: Int, stride: Int) {
+        let w = written.load(ordering: .relaxed)
+        for i in 0..<frames { storage[(w + i) & mask] = src[i * stride] }
+        written.store(w + frames, ordering: .releasing)
+    }
+
+    func read(into dst: UnsafeMutablePointer<Float>, frames: Int) {
+        let w = written.load(ordering: .acquiring)
+        var r = readPos.load(ordering: .relaxed)
+        if w - r > maxBacklog { r = w - target }
+        let available = min(frames, max(0, w - r))
+        for i in 0..<available { dst[i] = storage[(r + i) & mask] }
+        for i in available..<frames { dst[i] = 0 }
+        readPos.store(r + available, ordering: .relaxed)
     }
 }

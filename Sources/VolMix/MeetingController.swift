@@ -2,6 +2,7 @@ import AppKit
 import AVFoundation
 import CoreAudio
 import Foundation
+import os
 import UserNotifications
 
 /// Detecção de chamada, mudo do microfone e gravação/transcrição de reuniões.
@@ -215,8 +216,13 @@ final class MeetingController: ObservableObject {
         if new == nil { denoiser?.stop() }
         denoiser = new
         if cleanMicActive != (new != nil) { cleanMicActive = new != nil }
-        if cleanMicNote != note { cleanMicNote = note }
+        if cleanMicNote != note {
+            cleanMicNote = note
+            Self.log.notice("Cancelar meu ruído: \(note ?? "desligado", privacy: .public)")
+        }
     }
+
+    private static let log = Logger(subsystem: "com.wellingtonmota.volmix", category: "cleanMic")
 
     func toggleMicMute() {
         guard let muted = micMuted else { return }
