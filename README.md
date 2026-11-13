@@ -94,9 +94,29 @@ com o ganho aplicado (0–150%). Em 100% o tap é removido, e o áudio do app fi
 
 ## Publicar uma versão
 
-`./release.sh` gera `dist/DeadNoise.dmg` e `dist/DeadNoise.pkg`: universais (Apple Silicon e Intel), assinados
-com Developer ID e notarizados pela Apple. Os pré-requisitos (certificados e credencial de notarização) estão
-no topo do script. Depois: `gh release create vX.Y.Z dist/DeadNoise.dmg dist/DeadNoise.pkg`.
+1. Aumente `CFBundleShortVersionString` **e** `CFBundleVersion` em `Resources/Info.plist`. O app instalado só
+   reconhece a versão nova se o `CFBundleVersion` for maior (o `release.sh` recusa se não for).
+   Mudou o driver (`Driver/`)? Aumente também o `CFBundleVersion` de `Driver/Info.plist`: o app compara com o
+   driver instalado e oferece "Atualizar microfone virtual".
+2. Escreva as notas em `release-notes/<versão>.md` (Markdown curto). Elas aparecem na janela de atualização e no GitHub.
+3. Commit e `git push`.
+4. `./release.sh` gera `dist/DeadNoise.dmg`, `dist/DeadNoise.pkg` (universais, assinados com Developer ID e
+   notarizados) e `dist/appcast.xml` (a lista de versões, assinada). Os pré-requisitos estão no topo do script.
+5. `./publish.sh` confere tudo (commit no GitHub, versão, assinaturas, notarização) e cria o release `vX.Y.Z`.
+   Os apps instalados encontram a versão nova na próxima procura diária, e o download do site já aponta para ela.
+
+### Atualização automática (Sparkle)
+
+O app usa o [Sparkle](https://sparkle-project.org) (versão fixa em `Package.swift`). Ele lê o `appcast.xml` do
+release mais recente do GitHub e só aceita uma atualização com a assinatura EdDSA da chave do projeto
+(`SUPublicEDKey` no `Info.plist`) e com o próprio appcast assinado (`SURequireSignedFeed`).
+
+A chave privada fica nas Chaves do Mac de quem publica, na conta `deadnoise`. **Sem ela não dá para publicar
+atualizações para quem já tem o app.** Guarde uma cópia num gerenciador de senhas:
+
+    .build/artifacts/sparkle/Sparkle/bin/generate_keys --account deadnoise -x deadnoise-sparkle.key
+
+(e apague o arquivo depois de guardar). Para usar em outro Mac: `generate_keys --account deadnoise -f deadnoise-sparkle.key`.
 
 O site (`site/`) é publicado pela Vercel a cada push na `main`.
 

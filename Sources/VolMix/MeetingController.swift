@@ -41,6 +41,8 @@ final class MeetingController: ObservableObject {
     @Published private(set) var cleanMicActive = false
     /// O driver do microfone virtual não está instalado (a interface oferece instalar).
     @Published private(set) var driverMissing = false
+    /// O driver instalado é de uma versão anterior à que vem no app (a interface oferece atualizar).
+    @Published private(set) var driverOutdated = false
     /// Definido pelo MixerModel: recarrega a lista de dispositivos de áudio.
     var requestDeviceRefresh: (() -> Void)?
     @Published private(set) var cleanMicNote: String?
@@ -143,6 +145,8 @@ final class MeetingController: ObservableObject {
                 : "Falta o microfone virtual. Instale pelo instalador do site ou com ./Driver/build.sh install.")
         }
         if driverMissing { driverMissing = false }
+        let outdated = DriverInstaller.installedIsOutdated
+        if driverOutdated != outdated { driverOutdated = outdated }
         guard inputDevice != kAudioObjectUnknown, inputDevice != virtualMic else {
             return setCleanMic(nil, note: "Em Entrada, escolha o seu microfone de verdade. O “\(virtualMicName)” é para os apps de chamada.")
         }
@@ -196,6 +200,7 @@ final class MeetingController: ObservableObject {
         do {
             try DriverInstaller.install()
             cleanMicNote = "Microfone virtual instalado. Aguardando o áudio reiniciar…"
+            driverOutdated = DriverInstaller.installedIsOutdated
             Task { @MainActor in
                 // O serviço de áudio leva alguns segundos para voltar e publicar o dispositivo novo.
                 for _ in 0..<6 {

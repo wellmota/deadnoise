@@ -23,6 +23,20 @@ enum DriverInstaller {
         Bundle.main.url(forResource: "VolMixAudio", withExtension: "driver")
     }
 
+    /// O driver instalado é mais antigo que o que vem dentro do app (ex.: depois de uma atualização do app).
+    /// O Sparkle só troca o app; o driver em /Library precisa ser reinstalado com a senha.
+    static var installedIsOutdated: Bool {
+        guard let bundled = bundledDriver.flatMap({ buildNumber(at: $0) }),
+              let installed = buildNumber(at: URL(fileURLWithPath: destination)) else { return false }
+        return installed < bundled
+    }
+
+    private static func buildNumber(at driver: URL) -> Int? {
+        let plist = driver.appendingPathComponent("Contents/Info.plist")
+        guard let info = NSDictionary(contentsOf: plist) as? [String: Any] else { return nil }
+        return (info["CFBundleVersion"] as? String).flatMap(Int.init)
+    }
+
     /// Copia o driver para a pasta de drivers de áudio do sistema e reinicia o serviço de áudio.
     /// Mostra o pedido de senha de administrador do macOS. Chamar na thread principal.
     static func install() throws {

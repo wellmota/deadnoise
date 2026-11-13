@@ -5,11 +5,13 @@
 - [ ] Confirmar que volume por app e gravação funcionam na versão notarizada (hardened runtime).
 - [ ] Esconder o microfone virtual quando o app estiver fechado (hoje ele entrega silêncio). Mexe no driver:
       só publicar depois de testar instalando, porque um erro aqui deixa o microfone invisível.
-- [ ] Atualização automática (Sparkle) e fórmula do Homebrew.
+- [ ] Fórmula do Homebrew.
 - [ ] Afastar mais a logo da referência original.
 
 ## Feito
 
+- [x] Atualização automática (Sparkle): procura diária, aviso no menu, appcast e atualizações assinados,
+      e o app oferece atualizar o driver quando ele fica para trás.
 - [x] Imagem de disco (.dmg) com arte de fundo e atalho de Aplicativos, assinada e notarizada.
 - [x] O app instala o driver do microfone virtual sozinho (para quem usa o .dmg).
 - [x] Vercel conectada ao GitHub: o site atualiza a cada push.

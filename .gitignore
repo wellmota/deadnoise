@@ -5,3 +5,6 @@ dist/
 *.xcodeproj
 .swiftpm/
 .vercel/
+
+# Chave de assinatura das atualizações exportada: nunca entra no git
+*.key

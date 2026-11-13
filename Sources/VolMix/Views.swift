@@ -15,10 +15,15 @@ enum Metrics {
 struct MenuView: View {
     @EnvironmentObject var model: MixerModel
     @EnvironmentObject var meeting: MeetingController
+    @EnvironmentObject var updater: Updater
 
     var body: some View {
         VStack(alignment: .leading, spacing: Metrics.spacing) {
             header
+
+            if let version = updater.pendingVersion {
+                UpdateBanner(version: version) { updater.checkForUpdates() }
+            }
 
             Card {
                 DeviceRow(title: "Saída", icon: "headphones",
@@ -63,7 +68,11 @@ struct MenuView: View {
                     get: { model.launchAtLogin },
                     set: { model.setLaunchAtLogin($0) }
                 ))
+                Toggle("Instalar atualizações sozinho", isOn: $updater.automaticallyDownloads)
+                Button("Procurar atualizações…") { updater.checkForUpdates() }
+                    .disabled(!updater.canCheck)
                 Divider()
+                Text("Versão \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?")")
                 Button("Sair do DeadNoise") { NSApp.terminate(nil) }
             } label: {
                 Image(systemName: "ellipsis.circle")
@@ -307,6 +316,18 @@ struct CleanMicCard: View {
                     .toggleStyle(.switch)
                     .controlSize(.small)
             }
+            if meeting.driverOutdated, !meeting.driverMissing {
+                Text("Há uma versão nova do microfone virtual. Atualizar pede a senha do Mac e reinicia o áudio por alguns segundos: evite durante uma chamada.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Button {
+                    meeting.installDriver()
+                } label: {
+                    Label("Atualizar microfone virtual", systemImage: "arrow.triangle.2.circlepath")
+                        .frame(maxWidth: .infinity)
+                }
+            }
             if meeting.driverMissing, DriverInstaller.bundledDriver != nil {
                 Button {
                     meeting.installDriver()
@@ -317,6 +338,29 @@ struct CleanMicCard: View {
                 .controlSize(.large)
             }
         }
+    }
+}
+
+// MARK: Atualização
+
+/// Aviso de versão nova encontrada pela procura automática.
+struct UpdateBanner: View {
+    let version: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                Image(systemName: "arrow.down.circle.fill").foregroundStyle(Color.accentColor)
+                Text("DeadNoise \(version) disponível")
+                Spacer()
+                Text("Ver").foregroundStyle(Color.accentColor)
+            }
+            .padding(10)
+            .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: Metrics.cardRadius))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
     }
 }
 

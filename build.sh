@@ -18,6 +18,7 @@ cp Resources/Info.plist "$APP/Contents/Info.plist"
 
 # Assinar com um certificado estável faz a permissão de áudio sobreviver aos rebuilds.
 IDENTITY="${SIGN_IDENTITY:-$(security find-identity -v -p codesigning 2>/dev/null | grep -m1 'Apple Development' | sed -E 's/.*"(.+)"/\1/' || true)}"
+./embed-sparkle.sh "$APP" "${IDENTITY:--}"
 codesign --force --sign "${IDENTITY:--}" "$APP"
 echo "Assinado com: ${IDENTITY:-ad-hoc}"
 echo "Gerado: $PWD/$APP"
