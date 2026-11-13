@@ -55,8 +55,11 @@ final class MeetingController: ObservableObject {
 
     private var denoiser: MicDenoiser?
     private var denoiserRoute: [AudioDeviceID] = []
-    /// Rota que falhou ao iniciar: não tenta de novo até algo mudar.
+    /// Rota que falhou ao iniciar e quando: tenta de novo depois de alguns segundos ou se algo mudar.
     private var failedRoute: [AudioDeviceID]?
+    private var failedAt = Date.distantPast
+    /// Recriação pendente depois de uma mudança de formato (o dispositivo ainda está se acomodando).
+    private var rebuildPending = false
     private var askedMicAccess = false
 
     private let defaults = UserDefaults.standard
@@ -173,17 +176,23 @@ final class MeetingController: ObservableObject {
 
         let route = [inputDevice, appIO]
         if denoiser != nil, denoiserRoute == route { return }
-        guard failedRoute != route else { return }
+        guard !rebuildPending else { return }
+        guard failedRoute != route || Date().timeIntervalSince(failedAt) > 5 else { return }
         denoiser?.stop()
         denoiser = nil
         do {
             let new = try MicDenoiser(inputDevice: inputDevice, outputDevice: appIO)
             new.onConfigurationChange = { [weak self] in
                 Task { @MainActor in
-                    guard let self else { return }
-                    // O formato do microfone mudou (ex.: fone conectado): monta de novo.
+                    guard let self, !self.rebuildPending else { return }
+                    // O formato do microfone mudou (ex.: AirPods entrando no modo de chamada): para agora
+                    // e monta de novo quando o dispositivo se acomodar.
+                    Self.log.notice("Cancelar meu ruído: formato mudou, recriando")
                     self.denoiser?.stop()
                     self.denoiser = nil
+                    self.rebuildPending = true
+                    try? await Task.sleep(for: .milliseconds(700))
+                    self.rebuildPending = false
                     self.syncCleanMic()
                 }
             }
@@ -191,6 +200,8 @@ final class MeetingController: ObservableObject {
             setCleanMic(new, note: String(localized: "Ativo: seu ruído não chega na chamada."))
         } catch {
             failedRoute = route
+            failedAt = Date()
+            Self.log.error("Cancelar meu ruído: falhou ao iniciar: \(error.localizedDescription, privacy: .public)")
             setCleanMic(nil, note: String(localized: "Não foi possível iniciar o cancelamento de ruído: \(error.localizedDescription)"))
         }
     }

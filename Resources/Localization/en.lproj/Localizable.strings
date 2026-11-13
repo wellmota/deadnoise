@@ -48,7 +48,7 @@
 "Falha ao iniciar a gravação do áudio do sistema" = "Couldn’t start recording system audio";
 "Nenhum microfone disponível" = "No microphone available";
 "Formato do microfone não suportado" = "Unsupported microphone format";
-"O microfone não está entregando áudio" = "The microphone isn’t delivering audio";
+"Não foi possível abrir o microfone" = "Couldn’t open the microphone";
 "Isolamento de voz indisponível neste macOS" = "Voice isolation isn’t available on this version of macOS";
 "Abrir ao iniciar sessão: %@" = "Open at login: %@";
 "Não foi possível conectar %@." = "Couldn’t connect %@.";

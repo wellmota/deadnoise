@@ -197,54 +197,58 @@ private final class SystemCapture {
     }
 }
 
-/// Microfone padrão gravado em arquivo.
+/// Microfone padrão gravado em arquivo. Lê pelo Core Audio direto (InputCapture), sem AVAudioEngine,
+/// para uma troca de formato no meio da gravação (ex.: AirPods) não derrubar o app.
 private final class MicCapture {
-    private let engine = AVAudioEngine()
+    private var capture: InputCapture?
+    private let queue = DispatchQueue(label: "volmix.rec.mic", qos: .userInitiated)
     private var file: AVAudioFile?
-    private let lock = NSLock()
-    private var observer: NSObjectProtocol?
     var onConfigurationChange: (() -> Void)?
 
     init(url: URL) throws {
-        let input = engine.inputNode
-        let format = input.outputFormat(forBus: 0)
-        guard format.sampleRate > 0, format.channelCount > 0 else {
+        let device = (try? CA.defaultInputDevice()) ?? AudioDeviceID(kAudioObjectUnknown)
+        guard device != kAudioObjectUnknown else {
             throw CoreAudioError(status: kAudioHardwareBadDeviceError, context: String(localized: "Nenhum microfone disponível"))
         }
-        file = try AVAudioFile(forWriting: url, settings: aacSettings(for: format),
-                               commonFormat: .pcmFormatFloat32, interleaved: format.isInterleaved)
-
-        input.installTap(onBus: 0, bufferSize: 4096, format: format) { [weak self] buffer, _ in
-            guard let self else { return }
-            self.lock.lock()
-            defer { self.lock.unlock() }
-            try? self.file?.write(from: buffer)
+        // Abre a captura primeiro para saber a taxa do microfone; as amostras só são gravadas depois que o arquivo existe.
+        var writer: ((UnsafePointer<Float>, Int, Int) -> Void)?
+        let lock = NSLock()
+        let capture = try InputCapture(device: device, followsDefaultInput: true) { samples, frames, stride in
+            lock.lock(); let write = writer; lock.unlock()
+            write?(samples, frames, stride)
         }
-        engine.prepare()
+        guard let format = AVAudioFormat(standardFormatWithSampleRate: capture.sampleRate, channels: 1) else {
+            capture.stop()
+            throw CoreAudioError(status: kAudioFormatUnsupportedDataFormatError, context: String(localized: "Formato do microfone não suportado"))
+        }
         do {
-            try engine.start()
+            file = try AVAudioFile(forWriting: url, settings: aacSettings(for: format),
+                                   commonFormat: .pcmFormatFloat32, interleaved: false)
         } catch {
-            input.removeTap(onBus: 0)
-            file = nil
+            capture.stop()
             throw error
         }
-
-        // Trocar de microfone/fone para o engine: quem grava decide abrir novo segmento.
-        observer = NotificationCenter.default.addObserver(forName: .AVAudioEngineConfigurationChange,
-                                                          object: engine, queue: .main) { [weak self] _ in
-            self?.onConfigurationChange?()
+        let queue = self.queue
+        lock.lock()
+        writer = { [weak self] samples, frames, stride in
+            // Copia o bloco e grava fora da thread de áudio.
+            guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(frames)),
+                  let channel = buffer.floatChannelData?[0] else { return }
+            for i in 0..<frames { channel[i] = samples[i * stride] }
+            buffer.frameLength = AVAudioFrameCount(frames)
+            queue.async { try? self?.file?.write(from: buffer) }
         }
+        lock.unlock()
+        capture.onChange = { [weak self] in self?.onConfigurationChange?() }
+        self.capture = capture
     }
 
     deinit { stop() }
 
     func stop() {
-        if let observer { NotificationCenter.default.removeObserver(observer) }
-        observer = nil
-        engine.inputNode.removeTap(onBus: 0)
-        engine.stop()
-        lock.lock()
-        file = nil
-        lock.unlock()
+        capture?.stop()
+        capture = nil
+        // Fecha o arquivo depois de gravar o que ainda estava na fila (fechar finaliza o .m4a).
+        queue.sync { file = nil }
     }
 }
