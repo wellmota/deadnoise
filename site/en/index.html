@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeadNoise — free microphone noise cancellation for Mac</title>
+<meta name="description" content="DeadNoise is a free, open-source noise cancellation app for Mac: it cleans up your microphone on Meet, Zoom and Teams, sets volume per app and transcribes meetings.">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta name="author" content="Wellington Mota">
+<link rel="canonical" href="https://deadnoise.vercel.app/en/">
+<link rel="alternate" hreflang="pt-BR" href="https://deadnoise.vercel.app/">
+<link rel="alternate" hreflang="en" href="https://deadnoise.vercel.app/en/">
+<link rel="alternate" hreflang="x-default" href="https://deadnoise.vercel.app/">
+<meta property="og:title" content="DeadNoise — free, open-source noise cancellation for Mac">
+<meta property="og:site_name" content="DeadNoise">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="pt_BR">
+<meta property="og:description" content="Kill the noise on your microphone. Open source for macOS.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://deadnoise.vercel.app/en/">
+<meta property="og:image" content="https://deadnoise.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="DeadNoise: kill the noise on your microphone">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="DeadNoise — free, open-source noise cancellation for Mac">
+<meta name="twitter:description" content="Kill the noise on your microphone. Open source for macOS.">
+<meta name="twitter:image" content="https://deadnoise.vercel.app/og.png">
+<meta name="theme-color" content="#F4F0E1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="alternate" type="text/markdown" href="/llms.txt" title="Summary for AI assistants (llms.txt)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "DeadNoise", "description": "DeadNoise is a free, open-source noise cancellation app for Mac: it cleans up your microphone on Meet, Zoom and Teams, sets volume per app and transcribes meetings.", "url": "https://deadnoise.vercel.app/en/", "image": "https://deadnoise.vercel.app/og.png", "applicationCategory": "MultimediaApplication", "applicationSubCategory": "Noise cancellation", "operatingSystem": "macOS 15 or later", "inLanguage": "en", "isAccessibleForFree": true, "license": "https://opensource.org/licenses/MIT", "downloadUrl": "https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.dmg", "sameAs": ["https://github.com/wellmota/deadnoise"], "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "featureList": ["Microphone noise cancellation through a virtual microphone", "Independent volume per app (0 to 150%)", "On-device meeting recording and transcription", "Signed automatic updates"], "author": {"@type": "Person", "name": "Wellington Mota", "url": "https://github.com/wellmota"}}, {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is DeadNoise free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It’s free software under the MIT license: no account, no subscription and no minute limits. The code is on GitHub."}}, {"@type": "Question", "name": "Does it work with Google Meet, Zoom and Microsoft Teams?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. DeadNoise adds a virtual microphone called “DeadNoise Microphone”. Any calling app that lets you pick a microphone can use it: select it in the app’s audio settings."}}, {"@type": "Question", "name": "Is my audio sent to the cloud?", "acceptedAnswer": {"@type": "Answer", "text": "No. Noise cancellation uses macOS’s own voice isolation and runs entirely on your Mac. Meeting recordings and transcripts stay on your computer too. The app has no account and no server."}}, {"@type": "Question", "name": "Which Macs does it run on?", "acceptedAnswer": {"@type": "Answer", "text": "macOS 15 or later. The app is universal (Apple Silicon and Intel). Meeting transcription requires macOS 26. The app’s interface is currently in Brazilian Portuguese."}}, {"@type": "Question", "name": "Is it an alternative to Krisp?", "acceptedAnswer": {"@type": "Answer", "text": "For removing noise from your own microphone, yes: it’s free, open source and runs locally. DeadNoise doesn’t remove noise from other participants and has no cloud features."}}, {"@type": "Question", "name": "Why does macOS ask for my password during installation?", "acceptedAnswer": {"@type": "Answer", "text": "To install the virtual microphone, which is a system audio driver. It is asked for at install time, and again only when an update ships a new virtual microphone. The app and the installers are signed and verified (notarized) by Apple."}}, {"@type": "Question", "name": "How do I get updates?", "acceptedAnswer": {"@type": "Answer", "text": "The app checks for new versions once a day and lets you know in its menu. Under Options (…) you can check right away or let updates install on their own. Every update is signed, and the app rejects any update whose signature doesn’t match."}}]}]</script>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/en/" aria-label="DeadNoise, home">
+      <svg viewBox="0 0 512 512" aria-hidden="true"><circle cx="256" cy="256" r="240" fill="#1E1A19"/>
+  <rect x="102.1" y="189.6" width="18.8" height="91.1" rx="9.4" fill="#F4F0E1"/>
+  <rect x="126.2" y="158.9" width="18.8" height="135.0" rx="9.4" fill="#F4F0E1"/>
+  <rect x="150.3" y="139.4" width="18.8" height="89.8" rx="9.4" fill="#F4F0E1"/>
+  <rect x="150.3" y="308.7" width="18.8" height="58.3" rx="9.4" fill="#F4F0E1"/>
+  <rect x="174.4" y="126.1" width="18.8" height="93.5" rx="9.4" fill="#F4F0E1"/>
+  <rect x="174.4" y="318.3" width="18.8" height="50.8" rx="9.4" fill="#F4F0E1"/>
+  <rect x="198.4" y="117.4" width="18.8" height="105.9" rx="9.4" fill="#F4F0E1"/>
+  <rect x="198.4" y="314.6" width="18.8" height="84.7" rx="9.4" fill="#F4F0E1"/>
+  <rect x="222.5" y="112.4" width="18.8" height="136.0" rx="9.4" fill="#F4F0E1"/>
+  <rect x="222.5" y="289.6" width="18.8" height="101.0" rx="9.4" fill="#F4F0E1"/>
+  <rect x="246.6" y="110.8" width="18.8" height="198.5" rx="9.4" fill="#F4F0E1"/>
+  <rect x="246.6" y="349.6" width="18.8" height="60.5" rx="9.4" fill="#F4F0E1"/>
+  <rect x="270.7" y="112.4" width="18.8" height="136.0" rx="9.4" fill="#F4F0E1"/>
+  <rect x="270.7" y="289.6" width="18.8" height="101.0" rx="9.4" fill="#F4F0E1"/>
+  <rect x="294.8" y="117.4" width="18.8" height="105.9" rx="9.4" fill="#F4F0E1"/>
+  <rect x="294.8" y="314.6" width="18.8" height="84.7" rx="9.4" fill="#F4F0E1"/>
+  <rect x="318.8" y="126.1" width="18.8" height="93.5" rx="9.4" fill="#F4F0E1"/>
+  <rect x="318.8" y="318.3" width="18.8" height="50.8" rx="9.4" fill="#F4F0E1"/>
+  <rect x="342.9" y="139.4" width="18.8" height="89.8" rx="9.4" fill="#F4F0E1"/>
+  <rect x="342.9" y="308.7" width="18.8" height="58.3" rx="9.4" fill="#F4F0E1"/>
+  <rect x="367.0" y="158.9" width="18.8" height="135.0" rx="9.4" fill="#F4F0E1"/>
+  <rect x="391.1" y="189.6" width="18.8" height="91.1" rx="9.4" fill="#F4F0E1"/></svg>
+      DeadNoise
+    </a>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#faq">FAQ</a>
+      <a class="keep" href="https://github.com/wellmota/deadnoise">GitHub</a>
+      <a class="keep" href="/" hreflang="pt-BR" lang="pt-BR" title="Ler em português">PT</a>
+    </nav>
+  </header>
+</div>
+
+<main>
+  <div class="hero">
+    <div class="wedge" aria-hidden="true"></div>
+    <div class="wrap hero-grid">
+      <div>
+        <span class="tag">Open source · macOS</span>
+        <h1 class="display"><span class="dead">Dead</span><span class="noise">Noise</span><span class="sr">: microphone noise cancellation for Mac</span></h1>
+      </div>
+      <div>
+        <div class="demo">
+          <div class="demo-top">
+            <span id="demo-label">Kill my noise</span>
+            <button class="switch" id="toggle" role="switch" aria-checked="false" aria-labelledby="demo-label"></button>
+          </div>
+          <div class="bars" id="bars" aria-hidden="true"></div>
+          <p class="state" id="state" aria-live="polite" data-off="<b>Flip the switch.</b> This is what your call hears today: keyboard, fan, dog." data-on="<b>Noise: dead.</b> Only your voice gets through."><b>Flip the switch.</b> This is what your call hears today: keyboard, fan, dog.</p>
+        </div>
+      </div>
+    </div>
+    <div class="wrap" style="position:relative;z-index:1;margin-top:44px">
+      <p class="lede">Noise cancellation for your Mac’s microphone. Kill the noise before it reaches the call. Everything runs locally.</p>
+      <div class="cta">
+        <a class="btn" href="https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.dmg">Download for macOS</a>
+      </div>
+      <p class="req">Free and open source. Installer signed and verified by Apple. Updates itself. macOS 15 or later. The app’s interface is currently in Brazilian Portuguese.</p>
+    </div>
+  </div>
+
+  <section id="features">
+    <div class="wrap">
+      <h2 class="display">Three things.<br>Done right.</h2>
+      <div class="cards">
+        <article class="card">
+          <div class="n">01</div>
+          <h3>Kill my noise</h3>
+          <p>A virtual microphone sends only your voice to Meet, Teams, Zoom or any other app. The noise dies before it leaves your Mac.</p>
+        </article>
+        <article class="card">
+          <div class="n">02</div>
+          <h3>Per-app volume</h3>
+          <p>Turn the music down without turning the meeting down. Every app gets its own slider, from 0 to 150%, right in the menu bar.</p>
+        </article>
+        <article class="card">
+          <div class="n">03</div>
+          <h3>Record and transcribe</h3>
+          <p>Records the call and writes a transcript split into “Me” and “Others”. The audio never leaves your computer.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap how">
+      <div>
+        <h2 class="display">How it<br>works</h2>
+        <ol class="flow">
+          <li><div><b>DeadNoise listens to your real microphone.</b>Only while an app is on a call.</div></li>
+          <li><div><b>macOS voice isolation removes the noise.</b>On-device processing, no cloud, no account.</div></li>
+          <li><div><b>Your clean voice comes out of “DeadNoise Microphone”.</b>That’s the microphone you pick in your calling app.</div></li>
+        </ol>
+      </div>
+      <div id="instalar" class="install">
+        <a class="btn big" href="https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.dmg">Download for macOS</a>
+        <ol class="steps">
+          <li>Open <b>DeadNoise.dmg</b> and drag the app to <b>Applications</b>.</li>
+          <li>Open DeadNoise: it lives in the menu bar, with the skull icon.</li>
+          <li>Turn on <b>Cancelar meu ruído</b> (“kill my noise”) and click <b>Instalar microfone virtual</b> (“install virtual microphone”). macOS asks for your password and audio restarts for a few seconds.</li>
+        </ol>
+        <p class="note alt">Prefer an installer that does it all? <a href="https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.pkg">Get the .pkg</a>.</p>
+        <details>
+          <summary>Install from the Terminal</summary>
+          <pre><span class="c"># build and install from source</span>
+git clone https://github.com/wellmota/deadnoise
+cd deadnoise
+./build.sh install          <span class="c"># the app</span>
+./Driver/build.sh install   <span class="c"># the virtual microphone</span></pre>
+          <p class="note">Requires the Xcode command line tools. The second command asks for your password.</p>
+        </details>
+        <p class="note">Signed and verified by Apple. macOS 15 or later. Transcription requires macOS 26. Recording calls may require the consent of other participants.</p>
+      </div>
+    </div>
+  </section>
+  <section id="faq">
+    <div class="wrap">
+      <h2 class="display">Frequently<br>asked</h2>
+      <div class="faq">
+        <details>
+          <summary><h3>Is DeadNoise free?</h3></summary>
+          <p>Yes. It’s free software under the MIT license: no account, no subscription and no minute limits. The code is on GitHub.</p>
+        </details>
+        <details>
+          <summary><h3>Does it work with Google Meet, Zoom and Microsoft Teams?</h3></summary>
+          <p>Yes. DeadNoise adds a virtual microphone called “DeadNoise Microphone”. Any calling app that lets you pick a microphone can use it: select it in the app’s audio settings.</p>
+        </details>
+        <details>
+          <summary><h3>Is my audio sent to the cloud?</h3></summary>
+          <p>No. Noise cancellation uses macOS’s own voice isolation and runs entirely on your Mac. Meeting recordings and transcripts stay on your computer too. The app has no account and no server.</p>
+        </details>
+        <details>
+          <summary><h3>Which Macs does it run on?</h3></summary>
+          <p>macOS 15 or later. The app is universal (Apple Silicon and Intel). Meeting transcription requires macOS 26. The app’s interface is currently in Brazilian Portuguese.</p>
+        </details>
+        <details>
+          <summary><h3>Is it an alternative to Krisp?</h3></summary>
+          <p>For removing noise from your own microphone, yes: it’s free, open source and runs locally. DeadNoise doesn’t remove noise from other participants and has no cloud features.</p>
+        </details>
+        <details>
+          <summary><h3>Why does macOS ask for my password during installation?</h3></summary>
+          <p>To install the virtual microphone, which is a system audio driver. It is asked for at install time, and again only when an update ships a new virtual microphone. The app and the installers are signed and verified (notarized) by Apple.</p>
+        </details>
+        <details>
+          <summary><h3>How do I get updates?</h3></summary>
+          <p>The app checks for new versions once a day and lets you know in its menu. Under Options (…) you can check right away or let updates install on their own. Every update is signed, and the app rejects any update whose signature doesn’t match.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="wrap">
+  <footer>
+    <span>DeadNoise · noise cancellation for Mac · free software under the MIT license</span>
+    <span><a href="https://github.com/wellmota/deadnoise">github.com/wellmota/deadnoise</a></span>
+  </footer>
+</div>
+
+<script src="/demo.js" defer></script>
+</body>
+</html>

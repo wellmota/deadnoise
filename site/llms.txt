@@ -15,6 +15,7 @@ English: DeadNoise is a free, open-source (MIT) macOS menu bar app that removes 
 - Preço: grátis. Licença: MIT.
 - Sistema: macOS 15 ou mais novo; app universal (Apple Silicon e Intel). A transcrição exige o macOS 26.
 - Instaladores assinados com Developer ID e notarizados pela Apple.
+- Atualização automática: o app procura versões novas uma vez por dia; as atualizações são assinadas.
 - Privacidade: o áudio é processado localmente; o app não tem conta nem servidor.
 - Limites: não remove o ruído dos outros participantes da chamada.
 - Idioma da interface: português (Brasil).
@@ -22,6 +23,16 @@ English: DeadNoise is a free, open-source (MIT) macOS menu bar app that removes 
 ## Links
 
 - [Site](https://deadnoise.vercel.app/): página do produto, com perguntas frequentes
+- [Site in English](https://deadnoise.vercel.app/en/): product page and FAQ in English
 - [Download (.dmg)](https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.dmg): imagem de disco da versão mais recente
 - [Download (.pkg)](https://github.com/wellmota/deadnoise/releases/latest/download/DeadNoise.pkg): instalador que também instala o microfone virtual
 - [Código-fonte](https://github.com/wellmota/deadnoise): repositório no GitHub, com README e instruções de compilação
+
+## In English
+
+- Kill my noise: adds a virtual microphone, "DeadNoise Microphone", that sends only your voice to the calling app, using macOS's built-in voice isolation.
+- Per-app volume: an independent slider for each app, from 0 to 150%.
+- Record and transcribe: records the call and writes a transcript split into "Me" and "Others", all on-device.
+- Free, MIT license. macOS 15 or later, universal (Apple Silicon and Intel); transcription requires macOS 26.
+- Signed automatic updates. Installers signed with Developer ID and notarized by Apple.
+- The app's interface is currently in Brazilian Portuguese.
