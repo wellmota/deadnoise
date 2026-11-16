@@ -70,6 +70,9 @@ cp .build/apple/Products/Release/VolMix "$APP/Contents/MacOS/DeadNoise"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 cp -R Resources/Localization/*.lproj "$APP/Contents/Resources/"
+# Volume por aba: extensão do navegador e o host de native messaging que a liga ao app.
+cp -R Extension "$APP/Contents/Resources/BrowserExtension"
+install -m 755 Resources/browser-host.sh "$APP/Contents/Resources/browser-host.sh"
 cp Driver/Info.plist "$DRIVER/Contents/Info.plist"
 clang -O2 -Wall -Wno-unused-parameter -arch arm64 -arch x86_64 -mmacosx-version-min=15.0 -bundle \
   -o "$DRIVER/Contents/MacOS/VolMixAudio" Driver/VolMixAudio.c -framework CoreAudio -framework CoreFoundation

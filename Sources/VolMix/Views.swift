@@ -14,6 +14,7 @@ enum Metrics {
 
 struct MenuView: View {
     @EnvironmentObject var model: MixerModel
+    @EnvironmentObject var tabs: BrowserTabs
     @EnvironmentObject var meeting: MeetingController
     @EnvironmentObject var updater: Updater
 
@@ -100,7 +101,7 @@ struct MenuView: View {
 
     private var appsCard: some View {
         Card {
-            if model.apps.isEmpty {
+            if model.apps.isEmpty && tabs.orphanBrowsers(appIDs: []).isEmpty {
                 Text("Nenhum app tocando áudio agora")
                     .font(.callout)
                     .foregroundStyle(.secondary)
@@ -111,6 +112,11 @@ struct MenuView: View {
                     if index > 0 { Divider() }
                     AppRow(app: app)
                 }
+            }
+            ForEach(tabs.orphanBrowsers(appIDs: Set(model.apps.map(\.id)))) { browser in
+                Divider()
+                Text(browser.name).font(.callout).foregroundStyle(.secondary)
+                TabList(tabs: browser.tabs)
             }
         }
     }
@@ -456,6 +462,8 @@ struct RecordingCard: View {
 struct AppRow: View {
     let app: MixerModel.AppEntry
     @EnvironmentObject var model: MixerModel
+    @EnvironmentObject var tabs: BrowserTabs
+    @State private var showTabsHelp = false
 
     var body: some View {
         let gain = model.gain(for: app.id)
@@ -476,6 +484,18 @@ struct AppRow: View {
                 Text(app.name).lineLimit(1)
                 if !app.isPlaying {
                     Text("em silêncio").font(.caption).foregroundStyle(.secondary)
+                }
+                if BrowserTabs.isChromium(app.id), !tabs.isConnected(app.id) {
+                    Button { showTabsHelp = true } label: {
+                        Image(systemName: "square.split.2x1").font(.caption)
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(Color.accentColor)
+                    .help("Controlar cada aba separadamente")
+                    .accessibilityLabel("Controlar cada aba separadamente")
+                    .popover(isPresented: $showTabsHelp, arrowEdge: .bottom) {
+                        TabsHelp(browserID: app.id, browserName: app.name)
+                    }
                 }
                 Spacer()
                 (muted ? Text("Mudo") : Text(verbatim: "\(Int((gain * 100).rounded()))%"))
@@ -505,6 +525,108 @@ struct AppRow: View {
                 .accessibilityLabel("Volume de \(app.name)")
                 .accessibilityValue("\(Int((gain * 100).rounded())) por cento")
             }
+            let appTabs = tabs.tabs(forApp: app.id)
+            if !appTabs.isEmpty {
+                TabList(tabs: appTabs)
+                    .padding(.leading, Metrics.iconWidth + 8)
+                    .padding(.top, 4)
+            }
         }
+    }
+}
+
+// MARK: Abas do navegador
+
+/// Abas com som de um navegador, cada uma com volume (0–100%) e mudo próprios.
+struct TabList: View {
+    let tabs: [BrowserTabs.Tab]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(tabs) { TabRow(tab: $0) }
+        }
+    }
+}
+
+struct TabRow: View {
+    let tab: BrowserTabs.Tab
+    @EnvironmentObject var tabs: BrowserTabs
+
+    private var name: String { tab.title.isEmpty ? tab.host : tab.title }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            HStack(spacing: 6) {
+                Group {
+                    if let icon = tab.favicon {
+                        Image(nsImage: icon).resizable()
+                    } else {
+                        Image(systemName: "globe").resizable().foregroundStyle(.secondary)
+                    }
+                }
+                .frame(width: 14, height: 14)
+                .accessibilityHidden(true)
+
+                Button { tabs.focus(tab) } label: {
+                    Text(name).font(.callout).lineLimit(1).truncationMode(.tail)
+                }
+                .buttonStyle(.plain)
+                .help(String(localized: "Ir para a aba: \(name)"))
+
+                Spacer(minLength: 4)
+                (tab.muted ? Text("Mudo") : Text(verbatim: "\(Int((tab.gain * 100).rounded()))%"))
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(tab.muted ? Color.red : Color.secondary)
+                    .onTapGesture(count: 2) { tabs.setGain(1, for: tab) }
+                    .help("Clique duas vezes para voltar a 100%")
+            }
+            HStack(spacing: 6) {
+                Button { tabs.toggleMute(tab) } label: {
+                    Image(systemName: tab.muted ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                        .font(.caption)
+                        .foregroundStyle(tab.muted ? Color.red : Color.secondary)
+                        .frame(width: 14, height: 14)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .help(tab.muted ? String(localized: "Reativar o som da aba") : String(localized: "Silenciar a aba"))
+                .accessibilityLabel(tab.muted ? String(localized: "Reativar o som de \(name)") : String(localized: "Silenciar \(name)"))
+
+                Slider(value: Binding(get: { Double(tab.gain) }, set: { tabs.setGain(Float($0), for: tab) }), in: 0...1)
+                    .controlSize(.small)
+                    .disabled(tab.muted)
+                    .accessibilityLabel("Volume de \(name)")
+                    .accessibilityValue("\(Int((tab.gain * 100).rounded())) por cento")
+            }
+        }
+    }
+}
+
+/// Como instalar a extensão que separa as abas.
+struct TabsHelp: View {
+    let browserID: String
+    let browserName: String
+    @EnvironmentObject var tabs: BrowserTabs
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Volume por aba").font(.headline)
+            Text("O \(browserName) toca o som de todas as abas juntas, então o macOS só vê o app inteiro. Com a extensão do DeadNoise, cada aba com som aparece aqui com volume e mudo próprios.")
+                .fixedSize(horizontal: false, vertical: true)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("1. Na página de extensões, ative o **Modo do desenvolvedor**.")
+                Text("2. Clique em **Carregar sem compactação** e escolha a pasta “Browser Extension” que abriu no Finder.")
+            }
+            .font(.callout)
+            .fixedSize(horizontal: false, vertical: true)
+            Button {
+                tabs.openExtensionInstall(browser: browserID)
+            } label: {
+                Text("Abrir extensões e a pasta").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding(14)
+        .frame(width: 300)
     }
 }

@@ -7,7 +7,7 @@ struct VolMixApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            MenuView().environmentObject(model).environmentObject(model.meeting).environmentObject(updater)
+            MenuView().environmentObject(model).environmentObject(model.meeting).environmentObject(model.browserTabs).environmentObject(updater)
         } label: {
             Image(nsImage: MenuBarIcon.image)
         }

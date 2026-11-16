@@ -101,3 +101,15 @@
 "Silenciar %@" = "Mute %@";
 "Volume de %@" = "%@ volume";
 "%lld por cento" = "%lld percent";
+
+/* Volume por aba (extensão do navegador) */
+"Volume por aba" = "Volume per tab";
+"Controlar cada aba separadamente" = "Control each tab separately";
+"O %@ toca o som de todas as abas juntas, então o macOS só vê o app inteiro. Com a extensão do DeadNoise, cada aba com som aparece aqui com volume e mudo próprios." = "%@ plays the sound of all tabs together, so macOS only sees the whole app. With the DeadNoise extension, each tab playing sound shows up here with its own volume and mute.";
+"1. Na página de extensões, ative o **Modo do desenvolvedor**." = "1. On the extensions page, turn on **Developer mode**.";
+"2. Clique em **Carregar sem compactação** e escolha a pasta “Browser Extension” que abriu no Finder." = "2. Click **Load unpacked** and choose the “Browser Extension” folder that opened in Finder.";
+"Abrir extensões e a pasta" = "Open extensions and the folder";
+"Ir para a aba: %@" = "Go to tab: %@";
+"Navegador" = "Browser";
+"Reativar o som da aba" = "Unmute the tab";
+"Silenciar a aba" = "Mute the tab";

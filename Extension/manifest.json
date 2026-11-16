@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "DeadNoise: volume por aba",
+  "description": "Mostra as abas que tocam som no DeadNoise (app do Mac) e deixa ajustar o volume e o mudo de cada uma.",
+  "version": "1.0.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArlMRzjIKadQ5NhSYTYaTbIy0iMfTstmn8XuOkDCDb2+NKkBMRenf58vaiCckJpiMilV1EO43Cy0bokX9pvy1jN073z6+c0P12Ogt3olBx9ryQm+V0C/1GhveLVEwmsZiUuS/BGPk2AYmCKRwQo92mZrNkwlShkfv5OXsZ/V7/qYrEc64SoPcngCDQLWUBH0dLAL0BjrQtF+3m+azQdzKqJ+fsi/8bMFZS7GQVHnO1I3DgJ9hPN7sct/IfyeeJunhNEZH/TvPE50j3bdhLTMuWt0nIT+2tl47u8l/icXQnGxbVBrN1s18ugnOsJSfURP77iPKZZSFw1vyXFJX0tpWmwIDAQAB",
+  "minimum_chrome_version": "116",
+  "icons": { "16": "icon16.png", "48": "icon48.png", "128": "icon128.png" },
+  "permissions": ["tabs", "nativeMessaging", "scripting", "storage", "alarms", "favicon"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["page.js"],
+      "world": "MAIN",
+      "run_at": "document_start",
+      "all_frames": true,
+      "match_about_blank": true
+    }
+  ]
+}

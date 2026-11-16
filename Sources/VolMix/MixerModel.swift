@@ -33,6 +33,8 @@ final class MixerModel: ObservableObject {
 
     /// Chamada, mudo do microfone e gravação/transcrição.
     let meeting = MeetingController()
+    /// Volume por aba (Chrome e outros navegadores Chromium), via extensão.
+    let browserTabs = BrowserTabs()
 
     private var taps: [String: ProcessTap] = [:]
     private var pendingTeardown: [String: Task<Void, Never>] = [:]

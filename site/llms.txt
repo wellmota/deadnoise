@@ -8,6 +8,7 @@ English: DeadNoise is a free, open-source (MIT) macOS menu bar app that removes 
 
 - Cancelar meu ruído: cria um microfone virtual, "DeadNoise Microphone", que entrega só a sua voz para o app de chamada. Usa o isolamento de voz do próprio macOS.
 - Volume por app: controle independente para cada app, de 0 a 150%.
+- Volume por aba: no Chrome, Edge, Brave, Arc e Vivaldi, cada aba com som tem volume (0 a 100%) e mudo próprios, com a extensão do DeadNoise que vem dentro do app.
 - Gravar e transcrever: grava a chamada e gera a transcrição separando "Eu" e "Outros", tudo no aparelho.
 
 ## Fatos
@@ -32,6 +33,7 @@ English: DeadNoise is a free, open-source (MIT) macOS menu bar app that removes 
 
 - Kill my noise: adds a virtual microphone, "DeadNoise Microphone", that sends only your voice to the calling app, using macOS's built-in voice isolation.
 - Per-app volume: an independent slider for each app, from 0 to 150%.
+- Per-tab volume: in Chrome, Edge, Brave, Arc and Vivaldi, every tab playing sound gets its own volume (0 to 100%) and mute, through the DeadNoise extension bundled with the app.
 - Record and transcribe: records the call and writes a transcript split into "Me" and "Others", all on-device.
 - Free, MIT license. macOS 15 or later, universal (Apple Silicon and Intel); transcription requires macOS 26.
 - Signed automatic updates. Installers signed with Developer ID and notarized by Apple.

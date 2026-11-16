@@ -47,6 +47,8 @@ Gravar chamadas pode exigir o consentimento dos participantes, conforme a lei do
 - **Gravar e transcrever**: grava o áudio do Mac ("Outros") e o seu microfone ("Eu") em trilhas
   separadas e gera `transcricao.md` em `~/Documents/DeadNoise/<data> <app>/`. A transcrição roda no
   aparelho (macOS 26+); o resumo usa o modelo local e só aparece com a Apple Intelligence ativada.
+- **Volume por aba** no Chrome, Edge, Brave, Arc e Vivaldi: com a extensão do DeadNoise, cada aba com som
+  aparece embaixo do navegador, com volume (0–100%) e mudo próprios. Clicar no nome leva para a aba.
 - **Gravar chamadas automaticamente**: começa quando um app abre o microfone e para ~6 s depois que fecha.
 
 ## Build
@@ -78,6 +80,23 @@ com o ganho aplicado (0–150%). Em 100% o tap é removido, e o áudio do app fi
 - Volumes ficam salvos por app e são reaplicados quando o app volta a tocar.
 - Ao trocar de fone/alto-falante, os taps são recriados no novo dispositivo.
 
+### Volume por aba (extensão do navegador)
+
+O macOS só enxerga o navegador inteiro, então quem separa as abas é a extensão em `Extension/`:
+
+- A extensão manda ao app a lista de abas com som (título, site, ícone) e recebe o volume e o mudo de cada uma.
+- O mudo usa o mudo de aba do próprio navegador. O volume roda dentro da página (`page.js`): multiplica o volume
+  de `<audio>`/`<video>` e passa o Web Audio por um ganho. A página continua vendo o volume que ela mesma escolheu.
+- A conversa é por *native messaging*: o navegador abre `browser-host.sh` (dentro do app), que liga a extensão ao
+  socket local `~/Library/Application Support/DeadNoise/browser.sock`. Nada sai do Mac.
+- O app registra o host em cada navegador Chromium instalado e mantém uma cópia da extensão em
+  `~/Library/Application Support/DeadNoise/Browser Extension` sempre que abre.
+
+Instalar (até a extensão estar na Chrome Web Store): no menu do DeadNoise, clique no ícone de abas ao lado do
+Chrome e siga os passos (Modo do desenvolvedor > Carregar sem compactação > pasta "Browser Extension").
+O ID da extensão vem da chave em `Extension/manifest.json` (`jlhckjdnagcebkaggaggldcaoodhlghd`). Ao publicar na
+loja, inclua o ID novo em `BrowserTabs.extensionIDs`.
+
 ## Limitações
 
 - Se o "DeadNoise Microphone" estiver escolhido num app e o DeadNoise estiver fechado (ou com "Cancelar meu
@@ -87,8 +106,8 @@ com o ganho aplicado (0–150%). Em 100% o tap é removido, e o áudio do app fi
 - Sem fone, o microfone também capta a voz dos outros, e ela pode aparecer duplicada como "Eu".
 - A detecção de chamada é "algum app está usando o microfone" (ditado e gravadores também contam).
 
-- O controle é **por app, não por aba**: todas as abas do Chrome compartilham um processo de áudio.
-  Para separar o Meet, use outro navegador (Safari, Arc, Edge…) só para ele.
+- Sem a extensão, o controle é **por app**: o Chrome toca todas as abas num único processo de áudio. Com a
+  extensão (veja "Volume por aba"), cada aba tem volume de 0 a 100% (sem passar de 100%) e mudo.
 - Na primeira vez o macOS pede a permissão **Gravação de Tela e Áudio do Sistema**. Se um app ficar
   mudo ao mexer no slider, confira essa permissão em Ajustes > Privacidade e Segurança.
 
