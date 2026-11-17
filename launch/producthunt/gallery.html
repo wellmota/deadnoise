@@ -1,0 +1,95 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F4F0E1;--ink:#1E1A19;--red:#D7301F;--muted:#5d554f}
+*{box-sizing:border-box;margin:0}
+body{width:1270px;height:760px;overflow:hidden;background:var(--paper);color:var(--ink);font:400 20px/1.45 "Space Grotesk",sans-serif}
+.slide{position:relative;width:1270px;height:760px;overflow:hidden;display:none}
+.slide.on{display:block}
+.d{font-family:Anton,Impact,sans-serif;text-transform:uppercase;line-height:.92;letter-spacing:.01em}
+.wedge{position:absolute;right:-260px;top:-180px;width:900px;height:620px;background:var(--red);transform:rotate(-17deg);transform-origin:top right}
+.tag{display:inline-block;background:var(--ink);color:var(--paper);font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;padding:8px 14px;transform:rotate(-3deg)}
+/* menu (recriação fiel do menu do app, modo escuro) */
+.menu{position:absolute;width:360px;background:#262626;border-radius:12px;padding:12px;color:#f2f2f2;font:13px/1.3 -apple-system,"SF Pro Text",system-ui,sans-serif;box-shadow:0 30px 60px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.08)}
+.menu .hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.menu .hd b{font-size:15px}
+.badge{background:rgba(52,199,89,.22);border-radius:99px;padding:2px 9px;font-weight:500;font-size:12px;display:flex;gap:6px;align-items:center}
+.badge i{width:7px;height:7px;border-radius:50%;background:#34c759}
+.card{background:rgba(255,255,255,.06);border-radius:10px;padding:10px;margin-bottom:12px}
+.row{display:flex;align-items:center;gap:8px;margin:5px 0}
+.lbl{width:56px;color:#f2f2f2}.ic{width:20px;color:#9a9a9a;text-align:center}
+.pop{flex:1;background:rgba(255,255,255,.1);border-radius:6px;padding:4px 10px;display:flex;justify-content:space-between}
+.sec{color:#9a9a9a;font-weight:600;font-size:11px;margin:0 4px 6px}
+.sw{width:36px;height:20px;border-radius:20px;background:rgba(255,255,255,.18);position:relative;flex:none}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#eee}
+.sw.on{background:#34c759}.sw.on::after{left:18px}
+.sub{font-size:11px;color:#9a9a9a}.sub.g{color:#34c759}
+.btn{flex:1;background:rgba(255,255,255,.1);border-radius:7px;padding:7px;text-align:center}
+.app{margin:4px 0 8px}.app .t{display:flex;justify-content:space-between}.pct{color:#9a9a9a}
+.sl{height:4px;border-radius:4px;background:rgba(255,255,255,.18);position:relative;margin:9px 0 2px 28px}
+.sl span{position:absolute;left:0;top:0;bottom:0;background:#0a84ff;border-radius:4px}
+.sl em{position:absolute;top:-6px;width:16px;height:16px;border-radius:50%;background:#ddd;margin-left:-8px}
+.logo{width:22px;height:22px;border-radius:5px;display:inline-block;vertical-align:middle;margin-right:8px}
+/* slide 2 */
+.flow{position:absolute;left:70px;right:70px;top:300px;display:flex;align-items:stretch;gap:18px}
+.box{flex:1;border:3px solid var(--ink);background:var(--paper);padding:22px 20px;box-shadow:8px 8px 0 var(--red)}
+.box .n{font-family:Anton;font-size:44px;color:var(--red);line-height:1}
+.box h3{font-size:24px;margin:10px 0 6px}
+.box p{font-size:17px;color:var(--muted)}
+.arr{align-self:center;font-family:Anton;font-size:44px}
+</style></head><body>
+
+<div class="slide" id="s1">
+  <div class="wedge"></div>
+  <div style="position:absolute;left:70px;top:70px;width:600px">
+    <span class="tag">Free · Open source · macOS</span>
+    <h1 class="d" style="font-size:150px;margin-top:26px">Kill the<br>noise.</h1>
+    <p style="font-size:27px;font-weight:500;margin-top:26px;max-width:540px">Noise cancellation for your Mac’s microphone. Works with Meet, Zoom, Teams and any call app. Runs on-device.</p>
+  </div>
+  <div class="menu" style="right:110px;top:70px;transform:rotate(2deg)">
+    <div class="hd"><b>DeadNoise</b><span class="badge"><i></i>Zoom</span></div>
+    <div class="card">
+      <div class="row"><span class="ic">🎧</span><span class="lbl">Output</span><span class="pop">MacBook Pro Speakers <span>⌃</span></span></div>
+      <div class="row"><span class="ic">🎙</span><span class="lbl">Input</span><span class="pop">MacBook Pro Microphone <span>⌃</span></span></div>
+    </div>
+    <div class="sec">Microphone</div>
+    <div class="card"><div class="row" style="justify-content:space-between"><div><div>Kill my noise</div><div class="sub g">On: your noise doesn’t reach the call.</div></div><span class="sw on"></span></div></div>
+    <div class="sec">Meeting</div>
+    <div class="card"><div class="row"><span class="btn">◉ Record and transcribe</span></div>
+      <div class="row" style="justify-content:space-between"><span>Record calls automatically</span><span class="sw"></span></div></div>
+    <div class="sec">Volume per app</div>
+    <div class="card" style="margin:0">
+      <div class="app"><div class="t"><span><span class="logo" style="background:#1db954"></span>Spotify</span><span class="pct">45%</span></div><div class="sl"><span style="width:30%"></span><em style="left:30%"></em></div></div>
+      <div class="app" style="margin-bottom:2px"><div class="t"><span><span class="logo" style="background:#2d8cff"></span>Zoom</span><span class="pct">100%</span></div><div class="sl"><span style="width:66.6%"></span><em style="left:66.6%"></em></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" id="s2">
+  <div style="position:absolute;left:70px;top:70px">
+    <span class="tag">How it works</span>
+    <h1 class="d" style="font-size:96px;margin-top:22px">Your voice in.<br><span style="color:var(--red)">Only your voice</span> out.</h1>
+  </div>
+  <div class="flow" style="top:400px">
+    <div class="box"><div class="n">01</div><h3>Your real mic</h3><p>DeadNoise listens only while an app is on a call.</p></div>
+    <div class="arr">→</div>
+    <div class="box"><div class="n">02</div><h3>macOS voice isolation</h3><p>Apple’s on-device model strips the noise. No cloud, no account.</p></div>
+    <div class="arr">→</div>
+    <div class="box"><div class="n">03</div><h3>“DeadNoise Microphone”</h3><p>Pick it in Meet, Zoom or Teams. They only hear you.</p></div>
+  </div>
+</div>
+
+<div class="slide" id="s3">
+  <div class="wedge" style="right:-420px;top:-120px"></div>
+  <div style="position:absolute;left:70px;top:70px">
+    <span class="tag">Also in the menu bar</span>
+    <h1 class="d" style="font-size:110px;margin-top:22px">Three things.<br>Done right.</h1>
+  </div>
+  <div class="flow" style="top:420px">
+    <div class="box"><div class="n">01</div><h3>Kill my noise</h3><p>Keyboard, fan, dog: gone before it leaves your Mac.</p></div>
+    <div class="box"><div class="n">02</div><h3>Volume per app</h3><p>Music down, meeting up. Each app from 0 to 150%.</p></div>
+    <div class="box"><div class="n">03</div><h3>Record &amp; transcribe</h3><p>Transcripts split into “Me” and “Others”, made on your Mac.</p></div>
+  </div>
+</div>
+<script>document.getElementById(location.hash.slice(1)||'s1').classList.add('on')</script>
+</body></html>
