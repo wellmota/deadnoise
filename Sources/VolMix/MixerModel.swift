@@ -212,11 +212,23 @@ final class MixerModel: ObservableObject {
         catch { lastError = error.localizedDescription }
     }
 
+    /// Dispositivos que não fazem sentido no seletor do próprio DeadNoise: o microfone virtual
+    /// (é para os apps de chamada; escolher aqui faria o DeadNoise ler a própria saída), o canal
+    /// interno do driver e os aggregates que o DeadNoise/Core Audio criam para os taps.
+    private static func isInternal(_ device: AudioDeviceID) -> Bool {
+        guard let uid = CA.deviceUID(device) else { return false }
+        return uid == MicDenoiser.micUID
+            || uid == MicDenoiser.appIOUID
+            || uid.hasPrefix("volmix-")
+            || uid.hasPrefix("CADefaultDeviceAggregate")
+    }
+
     func refreshDevices() {
-        outputDevices = CA.devices(scope: kAudioObjectPropertyScopeOutput)
-        inputDevices = CA.devices(scope: kAudioObjectPropertyScopeInput)
+        let allInputs = CA.devices(scope: kAudioObjectPropertyScopeInput)
+        outputDevices = CA.devices(scope: kAudioObjectPropertyScopeOutput).filter { !Self.isInternal($0.id) }
+        inputDevices = allInputs.filter { !Self.isInternal($0.id) }
         currentInputID = (try? CA.defaultInputDevice()) ?? AudioDeviceID(kAudioObjectUnknown)
-        let virtualMic = inputDevices.first { CA.deviceUID($0.id) == MicDenoiser.micUID }?.id
+        let virtualMic = allInputs.first { CA.deviceUID($0.id) == MicDenoiser.micUID }?.id
         watchVirtualMic(virtualMic)
         meeting.virtualMic = virtualMic
         meeting.refreshMic(device: currentInputID)

@@ -101,7 +101,9 @@ loja, inclua o ID novo em `BrowserTabs.extensionIDs`.
 
 - Se o "DeadNoise Microphone" estiver escolhido num app e o DeadNoise estiver fechado (ou com "Cancelar meu
   ruído" desligado), o app recebe silêncio.
-- Em Entrada, mantenha o microfone de verdade: o "DeadNoise Microphone" é só para os apps de chamada.
+- O seletor de Entrada do DeadNoise não mostra o "DeadNoise Microphone" (ele é só para os apps de chamada).
+  Se ele virar a entrada padrão do Mac por outro caminho, o cancelamento fica parado até você escolher o
+  microfone de verdade.
 - A gravação pega todo o áudio do Mac, não só o do app da chamada.
 - Sem fone, o microfone também capta a voz dos outros, e ela pode aparecer duplicada como "Eu".
 - A detecção de chamada é "algum app está usando o microfone" (ditado e gravadores também contam).
